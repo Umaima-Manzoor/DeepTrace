@@ -42,6 +42,7 @@ footer {visibility: hidden;}
     background: linear-gradient(135deg, #76B900 0%, #06B6D4 40%, #8B5CF6 80%, #76B900 100%);
     background-size: 200% 200%;
     -webkit-background-clip: text;
+    background-clip: text;                 /* <-- Standard CSS property for full compatibility */
     -webkit-text-fill-color: transparent;
     animation: gradientShift 6s ease infinite;
     margin-bottom: 0.3rem;
