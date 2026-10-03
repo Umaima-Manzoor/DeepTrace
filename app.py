@@ -1,59 +1,40 @@
-"""
-app.py — DeepTrace Fact-Checking Dashboard
-Nebius x NVIDIA Global AI Hackathon (Track 2: Best Apps and Agents)
-Clean modular architecture: UI logic in app.py, styles in assets/style.css
-"""
-
 import streamlit as st
 from pathlib import Path
 import time
 
-# ============================================================
-# 1. PAGE SETUP
-# Must be the very first Streamlit command.
-# ============================================================
-st.set_page_config(
-    page_title="DeepTrace — Misinformation Radar",
+st.set_page_config(     # needs to be at the top, before anything else
+    page_title="DeepTrace - Misinformation Radar",
     page_icon="🛰️",
-    layout="wide",
+    layout="wide",          # column to entire screen width
     initial_sidebar_state="expanded"
 )
 
-# ============================================================
-# 2. CSS STYLESHEET LOADER
-# Reads our external assets/style.css file and injects it.
-# ============================================================
-def load_css(file_path: str):
-    """Reads a local CSS file and injects it into the Streamlit app."""
+
+def load_css(file_path: str):       # injecting style.css into Streamlit app
     css_file = Path(file_path)
     if css_file.exists():
-        with open(css_file, "r", encoding="utf-8") as f:
-            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+        with open(css_file, "r", encoding="utf-8") as f:        # utf-8 for emojis and special characters
+            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)       # reads the file into a <style> tag (single string) - Streamlit escapes raw HTML/CSS by default - without it style tags would be displayed as text
     else:
         st.warning(f"⚠️ Style file not found at {file_path}")
 
-# Load the external stylesheet from assets folder
 load_css("assets/style.css")
 
 
-# ============================================================
-# 3. SIDEBAR: INFRASTRUCTURE COCKPIT
-# Displays model and API health status to hackathon judges.
-# ============================================================
+
+# Displays model and API health status
 with st.sidebar:
     st.markdown("""
     <div style="text-align:center; margin-bottom:1.5rem;">
-        <div style="font-size:2rem;">🛰️</div>
+        <div style="font-size:3rem;">🛰️</div>
         <div style="font-size:1.3rem; font-weight:800; color:#F1F5F9;">DeepTrace</div>
-        <div style="font-size:0.75rem; color:#64748B; letter-spacing:2px; text-transform:uppercase;">
-            Misinformation Radar
-        </div>
+        <div style="font-size:0.75rem; color:#64748B; letter-spacing:2px; text-transform:uppercase;"> Misinformation Radar </div>
     </div>
     """, unsafe_allow_html=True)
 
     st.divider()
 
-    st.markdown("#### ⚙️ Infrastructure Status")
+    st.markdown("### ⚙️ Infrastructure Status")        # h4t
     st.markdown("""
     <div style="display:flex; flex-direction:column; gap:10px; margin-top:0.5rem;">
         <div>
@@ -81,13 +62,13 @@ with st.sidebar:
 
     st.divider()
 
-    st.markdown("#### 🔬 Verification Pipeline")
+    st.markdown("### 🔬 Verification Pipeline")
     st.markdown("""
     <div style="display:flex; flex-wrap:wrap; gap:4px;">
-        <span class="stage-pill">🧬 Extract</span>
-        <span class="stage-pill">🌐 Search</span>
-        <span class="stage-pill">⚖️ Analyze</span>
-        <span class="stage-pill">📊 Score</span>
+        <span class="stage-pill">🧬 Extract </span>
+        <span class="stage-pill">🌐 Search </span>
+        <span class="stage-pill">⚖️ Analyze </span>
+        <span class="stage-pill">📊 Score </span>
     </div>
     """, unsafe_allow_html=True)
 
@@ -103,46 +84,39 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
 
-# ============================================================
-# 4. MAIN HERO SECTION
-# ============================================================
+# HERO SECTION
 st.markdown('<div class="hero-title">🛰️ DeepTrace</div>', unsafe_allow_html=True)
 st.markdown("""
 <div class="hero-subtitle">
     Autonomous multi-source fact-verification engine. Paste any claim, 
-    viral headline, or news excerpt — get a real-time confidence scorecard 
+    viral headline, or news excerpt - get a real-time confidence scorecard 
     powered by NVIDIA Nemotron reasoning models and Tavily live search.
 </div>
 """, unsafe_allow_html=True)
 
-
-# ============================================================
-# 5. USER INPUT COCKPIT
-# ============================================================
+# USER INPUT AREA
 user_claim = st.text_area(
     label="Claim Input",
     placeholder="Example: \"NASA scientists have confirmed the discovery of an ancient alien spacecraft buried beneath Antarctic ice sheet...\"",
-    height=130,
+    height = 175,
     label_visibility="collapsed"
 )
 
 col_btn, col_batch, col_spacer = st.columns([2, 2, 6])
 
-with col_btn:
-    verify_clicked = st.button("🔍  Run Full Verification", type="primary", use_container_width=True)
+with col_btn:       # verify_clicked: boolean to see whether it has been clicked or not
+    verify_clicked = st.button("🔍  Run Full Verification", type="primary", use_container_width=True)       # forcing to use full width of col
 
 with col_batch:
     batch_mode = st.checkbox(
         "📰 Batch Article Mode",
         help="Decomposes a full article into multiple atomic claims and verifies each independently."
     )
+ 
 
-
-# ============================================================
-# 6. PIPELINE EXECUTION (Simulation for UI testing)
-# ============================================================
+# verification pipeline simulation - manages the progress bar and stage indicators
 if verify_clicked:
-    if not user_claim.strip():
+    if not user_claim.strip():      # empty after removing whitespace
         st.markdown("""
         <div class="glass-card" style="border-color: rgba(245,158,11,0.4); margin-top:1rem;">
             <span style="font-size:1.2rem;">⚠️</span>
@@ -154,7 +128,7 @@ if verify_clicked:
     else:
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # Stage Progress Indicators
+        # stage progress bar and indicator pills
         stage_container = st.empty()
         progress_bar = st.progress(0, text="Initializing verification pipeline...")
 
@@ -216,11 +190,11 @@ if verify_clicked:
         </div>
         """, unsafe_allow_html=True)
 
-        # --- RESULTS SCORECARD ---
+        # Results Summary Section
         st.markdown("---")
-        st.markdown("### 📋 Verification Results")
+        st.markdown("## 📋 Verification Results")
 
-        m1, m2, m3, m4 = st.columns(4)
+        m1, m2, m3, m4 = st.columns(4)      # equal widths
         with m1:
             st.metric("Overall Verdict", "🔴 DEBUNKED")
         with m2:
