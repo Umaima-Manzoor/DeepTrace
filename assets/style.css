@@ -49,6 +49,7 @@ footer {visibility: hidden;}    /* hides the "Made with Streamlit" footer text b
     animation: gradientShift 6s ease infinite;      
     margin-bottom: 0.3rem;          /* 4.8px */
     line-height: 1.1;               /* 110% of the font size */
+    text-align: center;             /* centers the title horizontally */
 }
 
 @keyframes gradientShift {   /*x   y*/
@@ -58,9 +59,11 @@ footer {visibility: hidden;}    /* hides the "Made with Streamlit" footer text b
 }
 
 .hero-subtitle {
-    font-size: 1.05rem;             /* 16.8px */
+    font-size: 1.1rem;              /* 17.6px */
     color: var(--text-secondary);
-    margin-bottom: 2rem;            /* 32px */
+    text-align: center;             /* centers subtitle horizontally */
+    max-width: 800px;               /* prevents stretching on wide monitors */
+    margin: 0 auto 2.5rem auto;     /* auto left/right margins = block centering */
     letter-spacing: 0.3px;
     line-height: 1.6;
 }
@@ -141,6 +144,26 @@ footer {visibility: hidden;}    /* hides the "Made with Streamlit" footer text b
 section[data-testid="stSidebar"] {      /* deep space navy to solid dark navy */
     background: linear-gradient(180deg, #0D1220 0%, #111827 100%);
     border-right: 1px solid var(--border-subtle);
+}
+
+/* infrastructure row - responsive flex layout for sidebar status entries */
+.infra-row {
+    display: flex;
+    justify-content: space-between;     /* pushes label and role to opposite sides */
+    align-items: center;
+    flex-wrap: wrap;                    /* role drops cleanly below if sidebar is too narrow */
+    gap: 4px 8px;                       /* row-gap | col-gap */
+}
+
+.infra-label {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.infra-role {
+    color: var(--text-muted);
+    font-size: 0.75rem;
 }
 
 /* input field */
@@ -224,13 +247,14 @@ section[data-testid="stSidebar"] {      /* deep space navy to solid dark navy */
 
 .source-card h4 {
     color: var(--tavily-teal);
-    margin: 0 0 0.3rem 0;           /* bottom: 4.8px */
-    font-size: 0.9rem;
+    margin: 0 0 0.4rem 0;           /* bottom: 6.4px */
+    font-size: 1rem;                /* 16px - increased from 0.9rem for better readability */
 }
 
 .source-card p {
     color: var(--text-secondary);
-    font-size: 0.85rem;
+    font-size: 0.95rem;             /* 15.2px - increased from 0.85rem */
+    line-height: 1.6;               /* clean paragraph spacing */
     margin: 0;              /* removes default margin */
 }
 
