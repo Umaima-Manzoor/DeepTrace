@@ -1,11 +1,6 @@
-/* ============================================================
-   DeepTrace Master Stylesheet (assets/style.css)
-   Colors: NVIDIA Green (#76B900), Nebius Purple (#8B5CF6), Tavily Teal (#06B6D4)
-   ============================================================ */
-
-/* ---- CSS VARIABLES ---- */
+/* css variables */
 :root {
-    --bg-primary: #0B0F1A;
+    --bg-primary: #0B0F1A;          
     --bg-card: #131829;
     --bg-card-hover: #1A2035;
     --border-subtle: #1E2740;
@@ -16,237 +11,227 @@
     --text-primary: #F1F5F9;
     --text-secondary: #94A3B8;
     --text-muted: #64748B;
-    --red: #EF4444;
-    --yellow: #F59E0B;
-    --green: #22C55E;
-    --grey: #6B7280;
+    --red: #EF4444;                 /* debunked */
+    --yellow: #F59E0B;              /* disputed */
+    --green: #22C55E;               /* verified */
+    --grey: #6B7280;                /* unverifiable */
+
+    /* RGB values for transparent overlays */
+    --bg-card-rgb: 19, 24, 41;
+    --nebius-purple-rgb: 139, 92, 246;
+    --nvidia-green-rgb: 118, 185, 0;
+    --tavily-teal-rgb: 6, 182, 212;
+    --red-rgb: 239, 68, 68;
+    --yellow-rgb: 245, 158, 11;
+    --green-rgb: 34, 197, 94;
+    --grey-rgb: 107, 114, 128;
 }
 
-/* ---- GLOBAL APP BACKGROUND ---- */
-.stApp {
-    background: linear-gradient(180deg, #0B0F1A 0%, #0F1629 50%, #0B0F1A 100%);
-}
+/* global app background */
+.stApp { background: linear-gradient(180deg, var(--bg-primary) 0%, #0F1629 50%, var(--bg-primary) 100%);}       /* dark navy - lighter navy - dark navy */
 
-/* ---- HIDE DEFAULT STREAMLIT HEADER & FOOTER ---- */
-header[data-testid="stHeader"] {
-    background: transparent;
-}
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
+/*  hide default streamlit hamburger header bar */
+header[data-testid="stHeader"] {  background: transparent; }
 
-/* ---- HERO TITLE WITH MULTI-BRAND GRADIENT ---- */
+#MainMenu {visibility: hidden;}     /* spacing stable but hidden element */
+footer {visibility: hidden;}    /* hides the "Made with Streamlit" footer text but keeps the spacing stable */
+
+
 .hero-title {
-    font-size: 3rem;
+    font-size: 3rem;            /* 48px */
     font-weight: 900;
     letter-spacing: -1px;
-    background: linear-gradient(135deg, #76B900 0%, #06B6D4 40%, #8B5CF6 80%, #76B900 100%);
-    background-size: 200% 200%;
-    -webkit-background-clip: text;
-    background-clip: text;                 /* <-- Standard CSS property for full compatibility */
+    background: linear-gradient(135deg, var(--nvidia-green) 0%, var(--tavily-teal) 40%, var(--nebius-purple) 80%, var(--nvidia-green) 100%);        /* top left to bottom right gradient */
+    background-size: 200% 200%;     /* for smooth animation for the title */
+    -webkit-background-clip: text;          /* for Safari and Chrome */
+    background-clip: text;                 /* for Firefox and other browsers */ 
     -webkit-text-fill-color: transparent;
-    animation: gradientShift 6s ease infinite;
-    margin-bottom: 0.3rem;
-    line-height: 1.1;
+    animation: gradientShift 6s ease infinite;      
+    margin-bottom: 0.3rem;          /* 4.8px */
+    line-height: 1.1;               /* 110% of the font size */
 }
 
-@keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+@keyframes gradientShift {   /*x   y*/
+    0% { background-position: 0% 50%; }     /* nvidia green + tavily teal */
+    50% { background-position: 100% 50%; }  /* nebius purple + nvidia green */
+    100% { background-position: 0% 50%; }   
 }
 
-/* ---- SUBTITLE ---- */
 .hero-subtitle {
-    font-size: 1.05rem;
-    color: #94A3B8;
-    font-weight: 400;
-    margin-bottom: 2rem;
+    font-size: 1.05rem;             /* 16.8px */
+    color: var(--text-secondary);
+    margin-bottom: 2rem;            /* 32px */
     letter-spacing: 0.3px;
     line-height: 1.6;
 }
 
-/* ---- GLASSMORPHISM CARDS ---- */
+/* text and data summaries */
 .glass-card {
-    background: rgba(19, 24, 41, 0.8);
+    background: rgba(var(--bg-card-rgb), 0.8);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(139, 92, 246, 0.15);
+    border: 1px solid rgba(var(--nebius-purple-rgb), 0.15);
     border-radius: 16px;
-    padding: 1.5rem;
+    padding: 1.5rem;                /* 24px */
     transition: all 0.3s ease;
 }
 
 .glass-card:hover {
-    border-color: rgba(139, 92, 246, 0.4);
-    box-shadow: 0 0 30px rgba(139, 92, 246, 0.08);
+    border-color: rgba(var(--nebius-purple-rgb), 0.4);
+    box-shadow: 0 0 30px rgba(var(--nebius-purple-rgb), 0.08);      /* 30px = radius */
 }
 
-/* ---- COLOR-CODED VERDICT PILLS ---- */
-.verdict-verified {
+/* colour-coded verdict pills */
+/* common properties */
+.verdict-verified, .verdict-disputed, .verdict-debunked, .verdict-unverifiable {
     display: inline-block;
-    background: rgba(34, 197, 94, 0.15);
-    color: #22C55E;
-    border: 1px solid rgba(34, 197, 94, 0.3);
-    padding: 0.4rem 1.2rem;
+    padding: 0.4rem 1.2rem;     /* top-bottom: 6.4px | left-right: 19.2px */
     border-radius: 50px;
     font-weight: 700;
     font-size: 1.1rem;
     letter-spacing: 1px;
+}
+
+.verdict-verified {
+    background: rgba(var(--green-rgb), 0.15);
+    color: var(--green);
+    border: 1px solid rgba(var(--green-rgb), 0.3);
 }
 
 .verdict-disputed {
-    display: inline-block;
-    background: rgba(245, 158, 11, 0.15);
-    color: #F59E0B;
-    border: 1px solid rgba(245, 158, 11, 0.3);
-    padding: 0.4rem 1.2rem;
-    border-radius: 50px;
-    font-weight: 700;
-    font-size: 1.1rem;
-    letter-spacing: 1px;
+    background: rgba(var(--yellow-rgb), 0.15);
+    color: var(--yellow);
+    border: 1px solid rgba(var(--yellow-rgb), 0.3);
 }
 
 .verdict-debunked {
-    display: inline-block;
-    background: rgba(239, 68, 68, 0.15);
-    color: #EF4444;
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    padding: 0.4rem 1.2rem;
-    border-radius: 50px;
-    font-weight: 700;
-    font-size: 1.1rem;
-    letter-spacing: 1px;
+    background: rgba(var(--red-rgb), 0.15);
+    color: var(--red);
+    border: 1px solid rgba(var(--red-rgb), 0.3);
     animation: pulseRed 2s ease-in-out infinite;
 }
 
-@keyframes pulseRed {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.3); }
-    50% { box-shadow: 0 0 20px 4px rgba(239, 68, 68, 0.15); }
-}
-
 .verdict-unverifiable {
-    display: inline-block;
-    background: rgba(107, 114, 128, 0.15);
-    color: #9CA3AF;
-    border: 1px solid rgba(107, 114, 128, 0.3);
-    padding: 0.4rem 1.2rem;
-    border-radius: 50px;
-    font-weight: 700;
-    font-size: 1.1rem;
-    letter-spacing: 1px;
+    background: rgba(var(--grey-rgb), 0.15);
+    color: var(--text-secondary);
+    border: 1px solid rgba(var(--grey-rgb), 0.3);
 }
 
-/* ---- PULSING LIVE STATUS DOT ---- */
+@keyframes pulseRed {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(var(--red-rgb), 0.3); }
+    50% { box-shadow: 0 0 20px 4px rgba(var(--red-rgb), 0.15); }        /* 20px = radius, 4px = spread */
+}
+
+/* pulsing live status dot */
 .status-dot {
     display: inline-block;
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #22C55E;
+    background: var(--green);
     margin-right: 6px;
     animation: pulseDot 2s ease-in-out infinite;
 }
 
 @keyframes pulseDot {
-    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5); }
-    50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(var(--green-rgb), 0.5); }
+    50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(var(--green-rgb), 0); }
 }
 
-/* ---- SIDEBAR STYLING ---- */
-section[data-testid="stSidebar"] {
+section[data-testid="stSidebar"] {      /* deep space navy to solid dark navy */
     background: linear-gradient(180deg, #0D1220 0%, #111827 100%);
-    border-right: 1px solid #1E2740;
+    border-right: 1px solid var(--border-subtle);
 }
 
-/* ---- TEXT INPUT FIELD ---- */
+/* input field */
 .stTextArea textarea {
-    background: #131829 !important;
-    border: 1px solid #1E2740 !important;
+    background: var(--bg-card) !important;      /* overrides the default background */
+    border: 1px solid var(--border-subtle) !important;
     border-radius: 12px !important;
-    color: #F1F5F9 !important;
-    font-size: 1rem !important;
+    color: var(--text-primary) !important;
+    font-size: 1rem !important;                 /* 16px */
     padding: 1rem !important;
     transition: border-color 0.3s ease !important;
 }
 
 .stTextArea textarea:focus {
-    border-color: #8B5CF6 !important;
-    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2) !important;
+    border-color: var(--nebius-purple) !important;
+    box-shadow: 0 0 0 2px rgba(var(--nebius-purple-rgb), 0.2) !important;
 }
 
-/* ---- PRIMARY VERIFICATION BUTTON ---- */
+/* primary verification button */
 .stButton > button[kind="primary"] {
-    background: linear-gradient(135deg, #8B5CF6, #06B6D4) !important;
+    background: linear-gradient(135deg, var(--nebius-purple), var(--tavily-teal)) !important;
     border: none !important;
     border-radius: 10px !important;
     color: white !important;
     font-weight: 700 !important;
     font-size: 1rem !important;
-    padding: 0.7rem 1.5rem !important;
+    padding: 0.7rem 1.5rem !important;          /* top-bottom: 11.2px | left-right: 24px */
     letter-spacing: 0.5px !important;
     transition: all 0.3s ease !important;
 }
 
 .stButton > button[kind="primary"]:hover {
-    box-shadow: 0 0 25px rgba(139, 92, 246, 0.4) !important;
+    box-shadow: 0 0 25px rgba(var(--nebius-purple-rgb), 0.4) !important;
     transform: translateY(-1px) !important;
 }
 
-/* ---- METRIC SUMMARY BOXES ---- */
+/* verification results boxes */
 .stMetric {
-    background: rgba(19, 24, 41, 0.6);
-    border: 1px solid #1E2740;
+    background: rgba(var(--bg-card-rgb), 0.6);
+    border: 1px solid var(--border-subtle);
     border-radius: 12px;
     padding: 1rem;
 }
 
-/* ---- STAGE PROGRESS PILLS ---- */
-.stage-pill {
+/* stage progress pills */
+.stage-pill {       /* default state - when stage hasn't run yet */
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    background: rgba(139, 92, 246, 0.1);
-    border: 1px solid rgba(139, 92, 246, 0.25);
+    gap: 6px;               /* between icon and text */
+    background: rgba(var(--nebius-purple-rgb), 0.1);
+    border: 1px solid rgba(var(--nebius-purple-rgb), 0.25);
     border-radius: 50px;
-    padding: 0.3rem 0.9rem;
-    font-size: 0.85rem;
+    padding: 0.3rem 0.9rem;     /* top-bottom: 4.8px | left-right: 14.4px */
+    font-size: 0.85rem;         /* 13.6px */
     color: #C4B5FD;
-    margin: 0.2rem;
+    margin: 0.2rem;             /* 3.2px */
 }
 
 .stage-pill.active {
-    background: rgba(139, 92, 246, 0.25);
-    border-color: #8B5CF6;
+    background: rgba(var(--nebius-purple-rgb), 0.25);
+    border-color: var(--nebius-purple);
     color: #E9D5FF;
-    box-shadow: 0 0 12px rgba(139, 92, 246, 0.2);
+    box-shadow: 0 0 12px rgba(var(--nebius-purple-rgb), 0.2);
 }
 
 .stage-pill.done {
-    background: rgba(34, 197, 94, 0.15);
-    border-color: rgba(34, 197, 94, 0.3);
+    background: rgba(var(--green-rgb), 0.15);
+    border-color: rgba(var(--green-rgb), 0.3);
     color: #86EFAC;
 }
 
-/* ---- SOURCE ATTRIBUTION CARDS ---- */
+/* source attribution cards */
 .source-card {
-    background: rgba(19, 24, 41, 0.6);
-    border: 1px solid #1E2740;
-    border-left: 3px solid #06B6D4;
+    background: rgba(var(--bg-card-rgb), 0.6);
+    border: 1px solid var(--border-subtle);
+    border-left: 3px solid var(--tavily-teal);
     border-radius: 8px;
     padding: 1rem 1.2rem;
     margin-bottom: 0.8rem;
 }
 
 .source-card h4 {
-    color: #06B6D4;
-    margin: 0 0 0.3rem 0;
+    color: var(--tavily-teal);
+    margin: 0 0 0.3rem 0;           /* bottom: 4.8px */
     font-size: 0.9rem;
 }
 
 .source-card p {
-    color: #94A3B8;
+    color: var(--text-secondary);
     font-size: 0.85rem;
-    margin: 0;
+    margin: 0;              /* removes default margin */
 }
 
 .source-tier {
@@ -256,7 +241,7 @@ section[data-testid="stSidebar"] {
     font-weight: 600;
 }
 
-.tier-1 { background: rgba(34,197,94,0.15); color: #22C55E; }
-.tier-2 { background: rgba(6,182,212,0.15); color: #06B6D4; }
-.tier-3 { background: rgba(245,158,11,0.15); color: #F59E0B; }
-.tier-4 { background: rgba(107,114,128,0.15); color: #9CA3AF; }
+.tier-1 { background: rgba(var(--green-rgb), 0.15); color: var(--green); }                  /* gov/edu/official = verifed */
+.tier-2 { background: rgba(var(--tavily-teal-rgb), 0.15); color: var(--tavily-teal); }      /*wire services/AP/Reuters = disputed */
+.tier-3 { background: rgba(var(--yellow-rgb), 0.15); color: var(--yellow); }                /* mainstream media/BBC/NYT = debunked */
+.tier-4 { background: rgba(var(--grey-rgb), 0.15); color: var(--grey); }                    /* blogs/social media = unverifiable */
