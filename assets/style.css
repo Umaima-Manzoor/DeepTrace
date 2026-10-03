@@ -36,6 +36,20 @@ header[data-testid="stHeader"] {  background: transparent; }
 #MainMenu {visibility: hidden;}     /* spacing stable but hidden element */
 footer {visibility: hidden;}    /* hides the "Made with Streamlit" footer text but keeps the spacing stable */
 
+/* permanently remove deploy button, toolbar, and dev status widgets */
+.stDeployButton, 
+[data-testid="stDeployButton"],
+[data-testid="stToolbar"],
+[data-testid="stDecoration"],
+[data-testid="stStatusWidget"] {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0px !important;
+    width: 0px !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
 
 .hero-title {
     font-size: 3rem;            /* 48px */

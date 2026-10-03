@@ -1,0 +1,23 @@
+# ============================================================
+# DeepTrace — Streamlit Engine Configuration
+# Customizes server behavior, UI chrome, and themes
+# ============================================================
+
+[client]
+# Hides the "Deploy" button completely
+showDeployButton = false
+
+# Minimal toolbar mode (removes extraneous developer options)
+toolbarMode = "minimal"
+
+[browser]
+# Disables usage telemetry pinging to keep development snappy
+gatherUsageStats = false
+
+[theme]
+# Forces dark theme baseline matching our custom design tokens
+base = "dark"
+primaryColor = "#8B5CF6"
+backgroundColor = "#0B0F1A"
+secondaryBackgroundColor = "#131829"
+textColor = "#F1F5F9"
