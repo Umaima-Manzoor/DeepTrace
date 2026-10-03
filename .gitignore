@@ -58,3 +58,9 @@ desktop.ini
 temp/
 cache/
 test_keys.py
+
+
+# Code Runner extension temp files
+tempCodeRunnerFile.py
+tempCodeRunnerFile.*
+*.tmp
