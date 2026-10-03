@@ -6,6 +6,7 @@
 .env
 .env.local
 .env.*
+!.env.example
 deeptrace_keys.txt
 *_keys.txt
 secrets.json
