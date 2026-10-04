@@ -7,7 +7,7 @@
 # Hides the "Deploy" button completely
 showDeployButton = false
 
-# Minimal toolbar mode (removes extraneous developer options)
+# Minimal toolbar mode (removes extra developer options)
 toolbarMode = "minimal"
 
 [browser]
