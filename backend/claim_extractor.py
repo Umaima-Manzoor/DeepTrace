@@ -1,8 +1,8 @@
 # uses NVIDIA Nemotron Nano (via Nebius Token Factory) to decompose raw, unstructured user text into structured, verifiable atomic claims.
 
 import json                 # Nemotron outputs in raw JSON format, which we parse into Python dictionaries.
-from openai import OpenAI
 from config.settings import settings
+from backend.utils import clean_json_string, get_nebius_client  # shared utilities
 
 # system prompt
 EXTRACTION_SYSTEM_PROMPT = """You are DeepTrace's high-precision factual claim extraction engine.
@@ -28,15 +28,6 @@ JSON STRUCTURE:
   ]
 }
 """
-
-
-# Initializes an OpenAI-compatible client pointed at Nebius Token Factory. Loads credentials and base URL from config/settings.py.
-def get_nebius_client() -> OpenAI:
-    return OpenAI(
-        base_url=settings.NEBIUS_BASE_URL,
-        api_key=settings.NEBIUS_API_KEY or "dummy_key_for_testing"
-    )
-
 
 # core extraction pipeline
 def extract_claims(raw_text: str, batch_mode: bool = False) -> dict:
@@ -84,7 +75,7 @@ def extract_claims(raw_text: str, batch_mode: bool = False) -> dict:
         raw_output = response.choices[0].message.content.strip()
 
         # Sanitize any accidental markdown code fences (```json ... ```)
-        cleaned_json = _clean_json_string(raw_output)
+        cleaned_json = clean_json_string(raw_output)
 
         # Parse string into Python dictionary for looping
         parsed_data = json.loads(cleaned_json)
@@ -101,16 +92,6 @@ def extract_claims(raw_text: str, batch_mode: bool = False) -> dict:
             "claims": []
         }
 
-# strips markdown code fences (```json) from LLM output if present.
-def _clean_json_string(raw_str: str) -> str:
-    cleaned = raw_str.strip()
-    if cleaned.startswith("```json"):
-        cleaned = cleaned[7:]
-    elif cleaned.startswith("```"):
-        cleaned = cleaned[3:]
-    if cleaned.endswith("```"):
-        cleaned = cleaned[:-3]
-    return cleaned.strip()
 
 # offline simulator: Generates realistic mock extracted claims when working offline or while Nebius account review is pending.  
 def _simulate_extraction_fallback(raw_text: str, batch_mode: bool) -> dict:
