@@ -4,7 +4,7 @@ import json                 # Nemotron outputs in raw JSON format, which we pars
 from config.settings import settings
 from backend.utils import clean_json_string, get_nebius_client  # shared utilities
 
-# system prompt
+# system prompt for Nemotron Nano
 EXTRACTION_SYSTEM_PROMPT = """You are DeepTrace's high-precision factual claim extraction engine.
 Your task is to analyze user input (rumors, headlines, article excerpts) and decompose it into distinct, verifiable atomic claims.
 

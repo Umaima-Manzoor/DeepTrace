@@ -1,20 +1,15 @@
-"""
-backend/cross_referencer.py — Stage 3: Deep Logical Cross-Referencing
+""" Stage 3: Deep Logical Cross-Referencing
 Uses NVIDIA Nemotron 3 Ultra (via Nebius Token Factory) to analyze live
 web evidence from Tavily, detect contradictions, categorize misinformation type,
 and synthesize a grounded factual verdict.
 """
 
-import json
+import json             # Ultra returns raw JSON - need to convert to Python dict
 from config.settings import settings
 from backend.utils import get_nebius_client, clean_json_string      # shared utilities
 
 
-# ============================================================
-# 1. SYSTEM PROMPT FOR NEMOTRON 3 ULTRA
-# Instructs the model to act as an investigative cross-examiner
-# with strict multi-source stance evaluation and JSON output.
-# ============================================================
+# system prompt for Nemotron 3 Ultra - instructs the model to act as an investigative cross-examiner
 CROSS_REFERENCE_SYSTEM_PROMPT = """You are DeepTrace's master investigative fact-verification and logical cross-referencing engine.
 Your task is to critically analyze an atomic factual claim against a pool of live retrieved web sources and determine the objective truth.
 
@@ -67,29 +62,20 @@ JSON OUTPUT STRUCTURE:
 """
 
 
-# ============================================================
-# 3. CORE CROSS-REFERENCING PROCEDURE
-# ============================================================
+# core cross-referencing pipeline
+# claim: dict per claim from stage 1 (claim_extractor)
+# sources_data: dict from stage 2 (source_retriever)
+# returns: dict with verdict, confidence, reasoning, and per-source stances
 def cross_reference_claim(claim: dict, sources_data: dict) -> dict:
-    """
-    Cross-references an atomic claim against retrieved sources using Nemotron 3 Ultra.
 
-    Args:
-        claim: Dictionary containing 'claim_text', 'category', etc. from Stage 1.
-        sources_data: Dictionary containing 'sources' list from Stage 2.
-
-    Returns:
-        A dictionary containing verdict, confidence, reasoning, and source stances.
-    """
     claim_text = claim.get("claim_text", "")
     sources = sources_data.get("sources", [])
 
-    # Defensive check: empty inputs
     if not claim_text.strip():
         return {
             "success": False,
             "error": "No claim text provided for cross-referencing.",
-            "verdict": "UNVERIFIABLE",
+            "verdict": "UNVERIFIABLE",      # default fallback - prevents crahsing
             "confidence_score": 0
         }
 
@@ -101,9 +87,7 @@ def cross_reference_claim(claim: dict, sources_data: dict) -> dict:
 
     try:
         client = get_nebius_client()
-
-        # Build formatted evidence dossier for Nemotron 3 Ultra
-        evidence_text = _format_evidence_dossier(sources)
+        evidence_text = _format_evidence_dossier(sources)       # formats sources into numbered list for LLM prompt (for Nemotron 3 Ultra)
 
         user_content = f"""CLAIM TO VERIFY:
 \"\"\"{claim_text}\"\"\"
@@ -130,7 +114,7 @@ Perform deep logical cross-referencing and return the required JSON evaluation."
         parsed_data = json.loads(cleaned_json)
         parsed_data["success"] = True
         parsed_data["is_mock"] = False
-        parsed_data["claim_text"] = claim_text
+        parsed_data["claim_text"] = claim_text      # for UI display
         return parsed_data
 
     except Exception as e:
@@ -143,11 +127,8 @@ Perform deep logical cross-referencing and return the required JSON evaluation."
         }
 
 
-# ============================================================
-# 4. HELPER UTILITIES
-# ============================================================
+# raw sources -> numbered list - used in cross_reference_claim()
 def _format_evidence_dossier(sources: list) -> str:
-    """Formats raw source dictionaries into a clean, numbered dossier for the LLM prompt."""
     if not sources:
         return "No external sources were retrieved."
 
@@ -160,14 +141,12 @@ def _format_evidence_dossier(sources: list) -> str:
             f"URL: {s.get('url', '')}\n"
             f"Snippet: {s.get('snippet', 'No snippet available.')}\n"
         )
-    return "\n".join(dossier_lines)
+    return "\n".join(dossier_lines)     # LLMs process structured text more accurately than raw JSON format
 
 
+# generates fake but realistic verdict data when running without a live Nebius key
 def _simulate_cross_reference_fallback(claim_text: str, sources: list) -> dict:
-    """
-    Offline simulator: Generates realistic mock cross-referencing verdicts
-    when running offline or while Nebius API key is in review.
-    """
+
     # Context-aware mock: if 'alien' or 'conspiracy' in text, simulate a debunked verdict
     lower_claim = claim_text.lower()
     is_debunked = any(w in lower_claim for w in ["alien", "spacecraft", "antarctic", "secret", "leak", "coverup"])
