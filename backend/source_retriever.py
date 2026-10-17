@@ -139,7 +139,7 @@ def retrieve_sources(query: str, max_results: int | None = None) -> dict:
         raw_results = search_response.get("results", [])    # extracting results list from Tavily's JSON response - empty list if no results found
         structured_sources = [] 
 
-        for index, item in enumerate(raw_results, start=1):     # index 0 is reserved for the primary claim, so we start at 1 for sources
+        for index, item in enumerate(raw_results, start=1):     # source IDs start at 1 for display purposes
             url = item.get("url", "")
             tier_info = classify_domain_tier(url)
 

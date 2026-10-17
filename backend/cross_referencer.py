@@ -36,10 +36,10 @@ OPERATIONAL PRINCIPLES:
    - "Legitimate": Verified factual report.
 
 4. OVERALL VERDICT:
-   - "VERIFIED" (🟢): High consensus among Tier 1/2 sources.
-   - "DISPUTED" (🟡): Conflicting reports among reputable outlets.
-   - "DEBUNKED" (🔴): Multiple authoritative sources directly contradict or disprove the claim.
-   - "UNVERIFIABLE" (⚪): Insufficient evidence to confirm or deny.
+   - "VERIFIED": High consensus among Tier 1/2 sources.
+   - "DISPUTED": Conflicting reports among reputable outlets.
+   - "DEBUNKED": Multiple authoritative sources directly contradict or disprove the claim.
+   - "UNVERIFIABLE": Insufficient evidence to confirm or deny.
 
 5. OUTPUT FORMAT: Output MUST be valid, raw JSON only. Do NOT include markdown code fences (like ```json), commentary, or extra text.
 

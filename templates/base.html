@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DeepTrace: autonomous multi-source fact-checking agent powered by NVIDIA Nemotron on Nebius Token Factory.">
+    <title>{% block title %}DeepTrace{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">DeepTrace</div>
+        <div class="sidebar-tagline">Verification Engine</div>
+
+        <hr class="sidebar-divider">
+
+        <div class="sidebar-section-title">Infrastructure</div>
+        <div class="infra-row">
+            <span class="infra-label">Nebius Token Factory</span>
+            <span class="infra-role">Inference Host</span>
+        </div>
+        <div class="infra-row">
+            <span class="infra-label">Nemotron 3 Ultra</span>
+            <span class="infra-role">Deep Reasoning</span>
+        </div>
+        <div class="infra-row">
+            <span class="infra-label">Nemotron Nano</span>
+            <span class="infra-role">Fast Extraction</span>
+        </div>
+        <div class="infra-row">
+            <span class="infra-label">Tavily Search API</span>
+            <span class="infra-role">Live Grounding</span>
+        </div>
+
+        <hr class="sidebar-divider">
+
+        <div class="sidebar-section-title">Pipeline</div>
+        <div class="stage-list">
+            <div class="stage-pill" id="stage-1">1. Extract Claims</div>
+            <div class="stage-pill" id="stage-2">2. Retrieve Sources</div>
+            <div class="stage-pill" id="stage-3">3. Cross-Reference</div>
+            <div class="stage-pill" id="stage-4">4. Generate Report</div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+        {% block content %}{% endblock %}
+    </main>
+
+</body>
+</html>

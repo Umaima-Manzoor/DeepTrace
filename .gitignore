@@ -43,18 +43,14 @@ wheels/
 .installed.cfg
 *.egg
 
-# 4. Streamlit Runtime & Cache
-.streamlit/secrets.toml
-.streamlit/cache/
-
-# 5. Operating System & Editor Metadata
+# 4. Operating System & Editor Metadata
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# 6. Testing, Logs & Local Scratchpads
+# 5. Testing, Logs & Local Scratchpads
 *.log
 temp/
 cache/
