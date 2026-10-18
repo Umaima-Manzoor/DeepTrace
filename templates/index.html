@@ -1,0 +1,34 @@
+{% extends "base.html" %}       <!-- jinja2 template inheritance - filling in the blocks -->
+{% block title %}DeepTrace — Verify a Claim{% endblock %}
+{% block content %}
+<h1 class="page-title">Verify a Claim</h1>
+<p class="page-subtitle">
+    Paste any claim, headline, or article excerpt. DeepTrace will decompose it
+    into atomic facts, search live sources, and cross-reference the evidence.
+</p>
+<form class="claim-form"
+      hx-post="/verify"
+      hx-target="#results-area"
+      hx-swap="innerHTML"
+      hx-indicator="#loading">
+          <textarea
+        name="claim_text"
+        class="claim-textarea"
+        placeholder="Paste a claim to verify. For example: NASA scientists confirmed the discovery of an ancient alien spacecraft beneath Antarctic ice."
+        required
+    ></textarea>
+    <div class="form-actions">
+                <button type="submit" class="btn-primary">
+            Run Verification
+        </button>
+            <label class="checkbox-label">
+            <input type="checkbox" name="batch_mode" value="true">
+            Batch article mode
+        </label>
+            </div>
+</form>
+<div id="loading" class="loading-indicator htmx-indicator">
+    Running verification pipeline...
+</div>
+<div id="results-area"></div>
+{% endblock %}

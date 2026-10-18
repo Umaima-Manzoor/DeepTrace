@@ -1,0 +1,14 @@
+<div class="stage-list" style="margin-bottom: var(--space-5);">
+    <div class="stage-pill {{ 'done' if stage >= 2 else 'active' if stage == 1 else '' }}">
+        1. Extract Claims
+    </div>
+    <div class="stage-pill {{ 'done' if stage >= 3 else 'active' if stage == 2 else '' }}">
+        2. Retrieve Sources
+    </div>
+    <div class="stage-pill {{ 'done' if stage >= 4 else 'active' if stage == 3 else '' }}">
+        3. Cross-Reference
+    </div>
+    <div class="stage-pill {{ 'active' if stage == 4 else '' }}">
+        4. Generate Report
+    </div>
+</div>
