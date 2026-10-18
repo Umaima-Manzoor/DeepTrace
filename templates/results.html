@@ -1,15 +1,17 @@
-{% if report.is_mock %}
+{% if report.is_mock %}         <!-- warning banner if True (missing key) -->
 <div class="mock-notice">
     Running in simulation mode. Nebius API key not configured. Results are illustrative.
 </div>
 {% endif %}
-<div style="text-align: center; margin-bottom: var(--space-6);">
-    <span class="verdict-badge {{ report.verdict_badge_class }}">
+
+<div style="text-align: center; margin-bottom: 32px;">
+    <span class="verdict-badge {{ report.verdict_badge_class }}">       <!-- Jinja2 variable interpolation - inserts the CSS class name from the backend -->
         {{ report.verdict }}
     </span>
 </div>
+
 <div class="metrics-row">
-        <div class="metric-card">
+    <div class="metric-card">
         <div class="metric-label">Confidence</div>
         <div class="metric-value gold">{{ report.confidence_score }}%</div>
     </div>
@@ -17,41 +19,46 @@
         <div class="metric-label">Sources Examined</div>
         <div class="metric-value">{{ report.metrics.total_sources }}</div>
     </div>
-        <div class="metric-card">
+    <div class="metric-card">
         <div class="metric-label">Misinfo Type</div>
         <div class="metric-value" style="font-size: 1rem;">{{ report.misinfo_type }}</div>
     </div>
-        <div class="metric-card">
+    <div class="metric-card">
         <div class="metric-label">High-Trust Ratio</div>
         <div class="metric-value">{{ report.metrics.high_trust_ratio }}</div>
     </div>
 </div>
+
 <div class="card">
     <div class="card-title">AI Reasoning</div>
     <p class="reasoning-text">{{ report.reasoning_summary }}</p>
-        {% if report.key_contradiction %}
+    {% if report.key_contradiction %}
     <div class="contradiction-text">
         <strong>Key Contradiction:</strong> {{ report.key_contradiction }}
     </div>
     {% endif %}
-    </div>
-    <div class="section-title">Source Evidence ({{ report.metrics.total_sources }} sources)</div>
-    {% for source in report.sources %}
-    <div class="source-card">
+</div>
+
+<div class="section-title">Source Evidence ({{ report.metrics.total_sources }} sources)</div>
+
+{% for source in report.sources %}
+<div class="source-card">
     <div class="source-header">
         <span class="source-domain">{{ source.domain }}</span>
         <span class="tier-badge {{ source.badge_class }}">{{ source.tier_label }}</span>
     </div>
-        <div class="source-title">{{ source.title }}</div>
-            <p class="source-snippet">
+    <div class="source-title">{{ source.title }}</div>
+    <p class="source-snippet">
         <span class="stance-label stance-{{ source.stance | lower }}">{{ source.stance }}:</span>
         {{ source.stance_summary }}
     </p>
-        <a href="{{ source.url }}" target="_blank" rel="noopener" class="source-url">{{ source.url }}</a>
-        </div>
+    <a href="{{ source.url }}" target="_blank" rel="noopener" class="source-url">{{ source.url }}</a>
+</div>
 {% endfor %}
-<div style="margin-top: var(--space-5);">
-    <form method="post" action="/download">
+
+<!-- normal HTML not htmx (because file downloads don't work with htmx) -->
+<div style="margin-top: 24px;">
+    <form method="post" action="/download">         <!-- sends data to server - server sends back a downloadable file -->
         <input type="hidden" name="report_markdown" value="{{ report.export_markdown }}">
         <button type="submit" class="btn-primary">Download Report</button>
     </form>
