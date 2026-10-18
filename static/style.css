@@ -1,10 +1,5 @@
-/* ============================================================
-   DeepTrace — Design System
-   Palette: Signal Blue + Porcelain + Gold Accent
-   No gradients. No shadows. No frosted glass. No animations.
-   ============================================================ */
+   /* Palette: Signal Blue + Porcelain + Gold Accent */
 
-/* --- Design Tokens --- */
 :root {
     /* Page surfaces */
     --bg-page: #f5f4ef;
@@ -76,7 +71,7 @@
 
 html {
     font-size: 16px;
-    -webkit-font-smoothing: antialiased;
+    -webkit-font-smoothing: antialiased;        /* renders text with smoother edges and not thick and blurry */
 }
 
 body {
@@ -108,12 +103,12 @@ a:hover {
     position: fixed;
     top: 0;
     left: 0;
-    overflow-y: auto;
+    overflow-y: auto;       /* if the sidebar is taller than the screen, it gets a scrollbar */
 }
 
 .main {
     margin-left: var(--sidebar-width);
-    flex: 1;
+    flex: 1;        /* takes all the remaining space other than the sidebar */
     padding: var(--space-7) var(--space-6);
     max-width: calc(var(--max-content) + var(--space-6) * 2);
 }
