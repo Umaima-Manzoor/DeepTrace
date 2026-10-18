@@ -21,7 +21,7 @@ templates = Jinja2Templates(directory="templates")          # where to look for 
 
 @app.get("/", response_class=HTMLResponse)      # run this function when a GET request is sent and this route returns HTML
 async def home(request: Request):   #Async: can handle multiple requests simultaneously - renders the home page with the claim input form - Request: HTTP object
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse(request, "index.html")
 
 
 @app.post("/verify", response_class=HTMLResponse)       # handles POST requests to /verify
@@ -29,8 +29,8 @@ async def verify(request: Request, claim_text: str = Form(...), batch_mode: str 
 
     if not claim_text or not claim_text.strip():
         return templates.TemplateResponse(
-            "partials/error.html",
-            {"request": request, "error_message": "No input detected. Paste a claim or article excerpt."}
+            request, "partials/error.html",
+            {"error_message": "No input detected. Paste a claim or article excerpt."}
         )
 
     is_batch = batch_mode == "true"
@@ -40,8 +40,8 @@ async def verify(request: Request, claim_text: str = Form(...), batch_mode: str 
         extraction = extract_claims(claim_text, batch_mode=is_batch)
         if not extraction.get("success"):
             return templates.TemplateResponse(
-                "partials/error.html",
-                {"request": request, "error_message": extraction.get("error", "Claim extraction failed.")}
+                request, "partials/error.html",
+                {"error_message": extraction.get("error", "Claim extraction failed.")}
             )
 
         # Stage 2: Retrieve live sources for the primary claim
@@ -55,14 +55,14 @@ async def verify(request: Request, claim_text: str = Form(...), batch_mode: str 
         report = generate_verification_report(primary_claim, sources_data, verdict_data)
 
         return templates.TemplateResponse(
-            "results.html",
-            {"request": request, "report": report}
+            request, "results.html",
+            {"report": report}
         )
 
     except Exception as e:
         return templates.TemplateResponse(
-            "partials/error.html",
-            {"request": request, "error_message": f"Verification failed: {str(e)}"}
+            request, "partials/error.html",
+            {"error_message": f"Verification failed: {str(e)}"}
         )
 
 

@@ -1,4 +1,4 @@
-   /* Palette: Signal Blue + Porcelain + Gold Accent */
+/* Palette: Signal Blue + Porcelain + Gold Accent */
 
 :root {
     /* Page surfaces */
@@ -59,10 +59,14 @@
     --sidebar-width: 260px;
     --max-content: 800px;
     --radius: 6px;
+
+    /* Motion (NEW) */
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-ui: cubic-bezier(0.2, 0, 0, 1);
 }
 
 
-/* --- Reset --- */
+/*  Reset  */
 *, *::before, *::after {
     margin: 0;
     padding: 0;
@@ -93,7 +97,7 @@ a:hover {
 }
 
 
-/* --- Layout: Sidebar + Main --- */
+/*  Layout: Sidebar + Main  */
 .sidebar {
     width: var(--sidebar-width);
     min-height: 100vh;
@@ -104,6 +108,7 @@ a:hover {
     top: 0;
     left: 0;
     overflow-y: auto;       /* if the sidebar is taller than the screen, it gets a scrollbar */
+    z-index: 20;            /* NEW: keeps sidebar above the overlay on mobile */
 }
 
 .main {
@@ -111,10 +116,11 @@ a:hover {
     flex: 1;        /* takes all the remaining space other than the sidebar */
     padding: var(--space-7) var(--space-6);
     max-width: calc(var(--max-content) + var(--space-6) * 2);
+    animation: fade-in 0.28s var(--ease-out) backwards;     /* NEW: subtle entrance on page load */
 }
 
 
-/* --- Sidebar Components --- */
+/*  Sidebar Components  */
 .sidebar-brand {
     font-size: 1.25rem;
     font-weight: 700;
@@ -180,6 +186,7 @@ a:hover {
     padding: var(--space-2) var(--space-3);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--radius);
+    transition: color 0.2s var(--ease-ui), border-color 0.2s var(--ease-ui), background-color 0.2s var(--ease-ui);    /* NEW: smooth state changes when pipeline runs */
 }
 
 .stage-pill.active {
@@ -194,7 +201,7 @@ a:hover {
 }
 
 
-/* --- Page Header --- */
+/*  Page Header  */
 .page-title {
     font-size: 1.75rem;
     font-weight: 700;
@@ -210,7 +217,7 @@ a:hover {
 }
 
 
-/* --- Form Elements --- */
+/*  Form Elements  */
 .claim-form {
     margin-bottom: var(--space-6);
 }
@@ -227,11 +234,13 @@ a:hover {
     border-radius: var(--radius);
     resize: vertical;
     line-height: 1.6;
+    transition: border-color 0.15s var(--ease-ui), box-shadow 0.15s var(--ease-ui);     /* NEW: smooth focus ring instead of instant snap */
 }
 
 .claim-textarea:focus {
     outline: none;
     border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0, 85, 255, 0.12);   /* NEW: visible focus ring for accessibility */
 }
 
 .claim-textarea::placeholder {
@@ -258,10 +267,15 @@ a:hover {
     border: none;
     border-radius: var(--radius);
     cursor: pointer;
+    transition: background-color 0.15s var(--ease-ui), opacity 0.15s var(--ease-ui), transform 0.12s var(--ease-ui);       /* NEW: smooth hover and press feedback */
 }
 
 .btn-primary:hover {
     background: var(--primary-hover);
+}
+
+.btn-primary:active:not(:disabled) {
+    transform: translateY(1px);                       /* NEW: subtle press-down on click */
 }
 
 .btn-primary:disabled {
@@ -283,7 +297,7 @@ a:hover {
 }
 
 
-/* --- Cards --- */
+/*  Cards  */
 .card {
     background: var(--bg-card);
     border: 1px solid var(--border-subtle);
@@ -300,7 +314,7 @@ a:hover {
 }
 
 
-/* --- Verdict Badge --- */
+/*  Verdict Badge  */
 .verdict-badge {
     display: inline-block;
     padding: var(--space-2) var(--space-4);
@@ -335,7 +349,7 @@ a:hover {
 }
 
 
-/* --- Metrics Row --- */
+/*  Metrics Row  */
 .metrics-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -370,19 +384,28 @@ a:hover {
 }
 
 
-/* --- Source Cards --- */
+/*  Source Cards  */
 .source-card {
     background: var(--bg-card);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius);
     padding: var(--space-4);
     margin-bottom: var(--space-3);
+    animation: fade-up 0.28s var(--ease-out) backwards;                    /* NEW: slides up on appear */
+    animation-delay: calc(0.1s + min(var(--i, 0), 3) * 0.06s);           /* NEW: staggered per card */
+    transition: border-color 0.15s var(--ease-ui), box-shadow 0.2s var(--ease-ui);                           /* NEW: hover feedback */
+}
+
+.source-card:hover {
+    border-color: var(--border);
+    box-shadow: 0 1px 2px rgba(10, 22, 41, 0.06);                        /* NEW: subtle lift on hover */
 }
 
 .source-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: var(--space-3);          /* NEW: space between domain name and tier badge */
     margin-bottom: var(--space-2);
 }
 
@@ -418,6 +441,7 @@ a:hover {
     font-weight: 600;
     padding: 2px var(--space-2);
     border-radius: var(--radius);
+    white-space: nowrap;          /* NEW: prevents badge text from wrapping to next line */
 }
 
 .tier-1 { background: var(--verdict-true-bg); color: var(--tier-1); }
@@ -437,7 +461,7 @@ a:hover {
 .stance-origin { color: var(--verdict-disputed); }
 
 
-/* --- Reasoning Block --- */
+/*  Reasoning Block  */
 .reasoning-text {
     font-size: 0.95rem;
     color: var(--text-secondary);
@@ -455,7 +479,7 @@ a:hover {
 }
 
 
-/* --- Error & Empty States --- */
+/*  Error & Empty States  */
 .error-box {
     background: var(--verdict-false-bg);
     border: 1px solid var(--verdict-false);
@@ -485,7 +509,7 @@ a:hover {
 }
 
 
-/* --- Loading State --- */
+/*  Loading State  */
 .loading-indicator {
     display: none;
     padding: var(--space-5);
@@ -503,8 +527,33 @@ a:hover {
     pointer-events: none;
 }
 
+/* Progress bar (NEW) */
+.progress-bar-track {
+    height: 4px;
+    max-width: 320px;
+    margin: 0 auto var(--space-3);
+    background: var(--border-subtle);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
 
-/* --- Section Dividers --- */
+.progress-bar-fill {
+    height: 100%;
+    background: var(--primary);
+    transform: scaleX(0);
+    transform-origin: left;
+}
+
+.htmx-request .progress-bar-fill {
+    animation: progress-fill 12s cubic-bezier(0.1, 0.6, 0.2, 1) forwards;
+}
+
+.htmx-request .loading-text {
+    animation: breathe 1.8s ease-in-out infinite;
+}
+
+
+/*  Section Dividers  */
 .section-title {
     font-size: 1.1rem;
     font-weight: 600;
@@ -515,18 +564,151 @@ a:hover {
 }
 
 
-/* --- Responsive --- */
-@media (max-width: 768px) {
+/*  Mobile Header (NEW)  */
+.mobile-header {
+    display: none;
+}
+
+.hamburger {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: var(--space-2);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.hamburger span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: var(--text-primary);
+    border-radius: 1px;
+}
+
+.mobile-brand {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+
+/*  Sidebar Overlay (NEW)  */
+.sidebar-overlay {
+    display: none;
+}
+
+
+/*  Motion: Keyframes (NEW)  */
+@keyframes fade-in {
+    from { opacity: 0; }
+}
+
+@keyframes fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+}
+
+@keyframes progress-fill {
+    to { transform: scaleX(0.9); }
+}
+
+@keyframes breathe {
+    50% { opacity: 0.55; }
+}
+
+/* Results entrance (NEW) — triggers when htmx inserts content */
+.results-container > .card,
+.results-container > .metrics-row {
+    animation: fade-up 0.32s var(--ease-out) backwards;
+}
+
+
+/*  Accessibility: Reduced Motion (NEW)  */
+@media (prefers-reduced-motion: reduce) {
+    .main,
+    .results-container > .card,
+    .results-container > .metrics-row,
+    .source-card {
+        animation-name: fade-in;
+    }
+    .htmx-request .loading-text {
+        animation: none;
+    }
     .sidebar {
-        display: none;
+        transition-duration: 0.01s !important;
+    }
+    .btn-primary:active:not(:disabled) {
+        transform: none;
+    }
+}
+
+
+/*  Responsive  */
+@media (max-width: 768px) {
+    .mobile-header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 15;
+        padding: var(--space-3) var(--space-4);
+        background: var(--bg-page);
+        border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .sidebar {
+        transform: translateX(-100%);
+        visibility: hidden;
+        transition: transform 0.2s var(--ease-out),
+                    visibility 0s linear 0.2s;
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+        visibility: visible;
+        transition: transform 0.25s var(--ease-out),
+                    visibility 0s;
+    }
+
+    .sidebar-overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 10;
+        background: rgba(10, 22, 41, 0.4);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s var(--ease-ui);
+    }
+
+    .sidebar-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
     }
 
     .main {
         margin-left: 0;
-        padding: var(--space-5) var(--space-4);
+        padding: var(--space-7) var(--space-4) var(--space-5);
+        padding-top: calc(var(--space-7) + 52px);
     }
 
     .metrics-row {
         grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 769px) {
+    .mobile-header {
+        display: none;
+    }
+    .sidebar-overlay {
+        display: none;
     }
 }

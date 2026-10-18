@@ -35,7 +35,11 @@
 </form>
 
 <div id="loading" class="loading-indicator htmx-indicator">
-    Running verification pipeline...
+    <div class="progress-bar-track">
+        <div class="progress-bar-fill"></div>
+    </div>
+    <div class="loading-text">Running verification pipeline...</div>
+    <div class="loading-shimmer"></div>
 </div>
 
 <div id="results-area"></div>
