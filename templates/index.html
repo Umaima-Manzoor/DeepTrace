@@ -22,6 +22,8 @@
         class="claim-textarea"
         placeholder="Paste a claim to verify. For example: NASA scientists confirmed the discovery of an ancient alien spacecraft beneath Antarctic ice."
         required
+        oninvalid="this.setCustomValidity('Paste a claim, headline, or article excerpt to get started.')"
+        oninput="this.setCustomValidity('')"
     ></textarea>
     <div class="form-actions">
         <button type="submit" class="btn-primary">

@@ -518,7 +518,7 @@ a:hover {
     font-size: 0.95rem;
 }
 
-.htmx-request .loading-indicator {
+.loading-indicator.htmx-request {
     display: block;
 }
 
