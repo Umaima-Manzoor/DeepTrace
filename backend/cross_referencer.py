@@ -5,6 +5,7 @@ and synthesize a grounded factual verdict.
 """
 
 import json             # Ultra returns raw JSON - need to convert to Python dict
+import re               # regex fallback for extracting JSON from noisy LLM output
 from config.settings import settings
 from backend.utils import get_nebius_client, clean_json_string      # shared utilities
 
@@ -15,10 +16,12 @@ Your task is to critically analyze an atomic factual claim against a pool of liv
 
 OPERATIONAL PRINCIPLES:
 1. STANCE CLASSIFICATION: For every source provided, classify its stance toward the claim:
-   - "SUPPORTS": Source explicitly verifies the claim with credible evidence.
+   - "SUPPORTS": Source confirms or corroborates the claim's core factual assertions, even if using different wording or providing additional context beyond the claim.
    - "CONTRADICTS": Source directly refutes, debunks, or provides evidence proving the claim false.
-   - "NEUTRAL": Source discusses the subject but provides no conclusive confirmation or denial.
+   - "NEUTRAL": Source discusses the subject but provides no conclusive confirmation or denial of the specific claim. Use this SPARINGLY — only when the source truly does not address the claim's core facts.
    - "ORIGIN_OF_CLAIM": Source is the unverified tabloid/social post where the rumor originated.
+
+   CRITICAL: Do NOT default to NEUTRAL out of caution. If a source states "water vapor was detected on K2-18b" and the claim says "water vapor was detected on K2-18b", that is SUPPORTS — even if the source also contains 500 words of additional context. Match on the core factual assertion, not the exact phrasing.
 
 2. DOMAIN WEIGHTING:
    - Prioritize Tier 1 (Official Govt/Academic) and Tier 2 (Wire Services: Reuters, AP).
@@ -29,8 +32,10 @@ OPERATIONAL PRINCIPLES:
    If the claim is not fully verified, categorize the deception type:
    - "Fabricated Data": Completely invented figures, events, or discoveries.
    - "False Attribution": Real quote/action falsely credited to a person or agency (e.g. NASA).
+   - "Persistent Myth": A widely repeated false belief that has been debunked multiple times but continues to circulate (e.g., "the Great Wall is visible from space").
    - "Cherry-Picking": True data taken selectively to create a misleading conclusion.
    - "Out of Context": Genuine historical event or quote applied to the wrong situation.
+   - "Exaggeration": Based on real facts but significantly overstates the findings or implications.
    - "Satire / Parody": Satirical content mistaken for real news.
    - "Synthetic Media": Linguistic patterns suggesting AI-generated hallucination.
    - "Legitimate": Verified factual report.
@@ -60,6 +65,36 @@ JSON OUTPUT STRUCTURE:
   ]
 }
 """
+
+
+# Attempts multiple strategies to extract valid JSON from LLM output.
+# LLMs sometimes wrap JSON in markdown fences, add preamble text, or truncate mid-object.
+def _robust_json_parse(raw_output: str) -> dict:
+    # Strategy 1: Use the shared clean_json_string utility (handles most common cases)
+    try:
+        cleaned = clean_json_string(raw_output)
+        return json.loads(cleaned)
+    except (json.JSONDecodeError, Exception):
+        pass
+
+    # Strategy 2: Extract JSON block from markdown code fences (```json ... ```)
+    fence_match = re.search(r'```(?:json)?\s*(\{.*?\})\s*```', raw_output, re.DOTALL)
+    if fence_match:
+        try:
+            return json.loads(fence_match.group(1))
+        except json.JSONDecodeError:
+            pass
+
+    # Strategy 3: Find the outermost { ... } block in the raw text
+    brace_match = re.search(r'\{.*\}', raw_output, re.DOTALL)
+    if brace_match:
+        try:
+            return json.loads(brace_match.group(0))
+        except json.JSONDecodeError:
+            pass
+
+    # All strategies exhausted — raise so the caller's except block handles it
+    raise json.JSONDecodeError("Could not extract valid JSON from LLM response", raw_output, 0)
 
 
 # core cross-referencing pipeline
@@ -109,9 +144,8 @@ Perform deep logical cross-referencing and return the required JSON evaluation."
         )
 
         raw_output = response.choices[0].message.content.strip()
-        cleaned_json = clean_json_string(raw_output)
+        parsed_data = _robust_json_parse(raw_output)        # multi-strategy JSON extraction replaces single json.loads call
 
-        parsed_data = json.loads(cleaned_json)
         parsed_data["success"] = True
         parsed_data["is_mock"] = False
         parsed_data["claim_text"] = claim_text      # for UI display
@@ -134,12 +168,18 @@ def _format_evidence_dossier(sources: list) -> str:
 
     dossier_lines = []
     for s in sources:
+        snippet = s.get("snippet", "No snippet available.")
+        # Safety net: truncate again in case retriever was bypassed or snippets are still oversized
+        words = snippet.split()
+        if len(words) > 250:
+            snippet = " ".join(words[:250]) + "..."
+
         dossier_lines.append(
             f"--- SOURCE #{s.get('source_id', '?')} ---\n"
             f"Title: {s.get('title', 'Unknown')}\n"
             f"Domain: {s.get('domain', 'Unknown')} ({s.get('tier_label', 'Tier 4')})\n"
             f"URL: {s.get('url', '')}\n"
-            f"Snippet: {s.get('snippet', 'No snippet available.')}\n"
+            f"Snippet: {snippet}\n"
         )
     return "\n".join(dossier_lines)     # LLMs process structured text more accurately than raw JSON format
 

@@ -33,6 +33,20 @@ TIER_3_DOMAINS = {
 }
 
 
+# Truncates a text snippet to a maximum word count, preserving sentence boundaries.
+# Prevents LLM context overflow when Tavily returns full-page content dumps.
+def _truncate_snippet(text: str, max_words: int = 200) -> str:
+    if not text:
+        return ""
+    words = text.split()
+    if len(words) <= max_words:
+        return text
+    truncated = " ".join(words[:max_words])
+    last_period = truncated.rfind(".")        # try to cut at a sentence boundary
+    if last_period > max_words * 3:           # only if the period is past ~60% of the limit
+        return truncated[:last_period + 1]
+    return truncated + "..."                  # hard cut with ellipsis if no clean boundary found
+
 
 # Initializes and returns an authenticated TavilyClient - returns None if the key is missing or invalid.
 def get_tavily_client() -> TavilyClient | None:
@@ -147,7 +161,7 @@ def retrieve_sources(query: str, max_results: int | None = None) -> dict:
                 "source_id": index,
                 "title": item.get("title", "Untitled Source"),
                 "url": url,
-                "snippet": item.get("content", "").strip(),
+                "snippet": _truncate_snippet(item.get("content", "").strip()),     # truncate to ~200 words to prevent LLM context overflow
                 "score": round(item.get("score", 0.0), 3),      # 3 dp
                 "domain": tier_info["domain"],
                 "tier": tier_info["tier"],
