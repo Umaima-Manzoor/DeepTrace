@@ -41,7 +41,7 @@ class Settings:     #Central configuration store for DeepTrace verification pipe
     # LLM Operational Hyperparameters
     DEFAULT_TEMPERATURE: float = 0.2    # Strict factual reasoning, minimal hallucination, no invention
     MAX_TOKENS_EXTRACTION: int = 1024    # Nano token limit for claim extraction
-    MAX_TOKENS_SYNTHESIS: int = 1500    # Ultra token limit for cross-referencing analysis - more because of the need to synthesize multiple sources and provide a detailed explanation
+    MAX_TOKENS_SYNTHESIS: int = 2000    # Ultra token limit for cross-referencing analysis - more because of the need to synthesize multiple sources and provide a detailed explanation
 
     @classmethod
     def validate_keys(cls) -> dict[str, bool]:

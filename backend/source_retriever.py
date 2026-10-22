@@ -4,6 +4,7 @@ Queries Tavily AI Search API for live grounding evidence and assigns
 domain credibility tiers (Tier 1 to Tier 4) to each retrieved source.
 """
 
+import re               # regex for stripping markdown noise from Tavily snippets
 from urllib.parse import urlparse       # root domain and subdomain extraction
 from tavily import TavilyClient
 from config.settings import settings
@@ -31,6 +32,22 @@ TIER_3_DOMAINS = {
     "time.com", "economist.com", "theatlantic.com", "forbes.com",
     "scientificamerican.com", "nationalgeographic.com", "space.com"
 }
+
+
+# Strips markdown formatting, file references, and navigation noise from Tavily snippets.
+# Tavily's advanced search sometimes pulls entire page structures including download
+# links, image captions, and social media buttons — none of which are useful evidence.
+def _clean_snippet(text: str) -> str:
+    if not text:
+        return ""
+
+    text = re.sub(r'#{1,6}\s*', '', text)           # Remove markdown headers (###### Movies -> Movies)
+    text = re.sub(r'\[([^\]]*)\]\([^)]*\)', r'\1', text)            # Remove markdown links [text](url) - keep just the text
+    text = re.sub(r'\[[\w\-_.]+\.(?:mp4|webm|mp3|jpg|png|gif|srt|vtt|pdf|zip)\s*[^\]]*\]', '', text, flags=re.IGNORECASE)           # Remove file references like [filename.mp4 (1920x1080) [145.6 MB]]
+    text = re.sub(r'\[(?:edit|\d+|\d+\.\d+\s*\w+)\]', '', text, flags=re.IGNORECASE)            # Remove bracketed metadata like [edit], [1], [145.6 MB], [84 bytes]
+    text = re.sub(r'\b(?:Facebook|Twitter|Reddit|Pinterest|Flipboard|Subscribe|Follow|Log in|Reply)\b', '', text)       # Remove common navigation and social media noise words
+    text = re.sub(r'\s+', ' ', text).strip()        # Collapse multiple spaces and newlines into single space
+    return text
 
 
 # Truncates a text snippet to a maximum word count, preserving sentence boundaries.
@@ -157,11 +174,15 @@ def retrieve_sources(query: str, max_results: int | None = None) -> dict:
             url = item.get("url", "")
             tier_info = classify_domain_tier(url)
 
+            raw_content = item.get("content", "").strip()
+            clean_content = _clean_snippet(raw_content)         # strip markdown noise first
+            short_content = _truncate_snippet(clean_content)     # then truncate to ~200 words
+
             source_entry = {
                 "source_id": index,
                 "title": item.get("title", "Untitled Source"),
                 "url": url,
-                "snippet": _truncate_snippet(item.get("content", "").strip()),     # truncate to ~200 words to prevent LLM context overflow
+                "snippet": short_content,
                 "score": round(item.get("score", 0.0), 3),      # 3 dp
                 "domain": tier_info["domain"],
                 "tier": tier_info["tier"],
