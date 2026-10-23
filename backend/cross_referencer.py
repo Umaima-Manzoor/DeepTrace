@@ -93,9 +93,22 @@ def _robust_json_parse(raw_output: str) -> dict:
         except json.JSONDecodeError:
             pass
 
+    # Strategy 4: Repair truncated JSON by closing at the last complete object.
+    # When the model hits max_tokens mid-JSON, the output starts with { but has no
+    # closing }. We find the last } (end of the last complete stance entry), truncate
+    # there, and append ]} to close the source_stances array and root object.
+    stripped = raw_output.strip()
+    if stripped.startswith('{'):
+        last_brace = stripped.rfind('}')
+        if last_brace > 50:       # only if we have a substantial amount of valid JSON
+            repaired = stripped[:last_brace + 1] + ']}'
+            try:
+                return json.loads(repaired)
+            except json.JSONDecodeError:
+                pass
+
     # All strategies exhausted — raise so the caller's except block handles it
     raise json.JSONDecodeError("Could not extract valid JSON from LLM response", raw_output, 0)
-
 
 # core cross-referencing pipeline
 # claim: dict per claim from stage 1 (claim_extractor)
@@ -152,11 +165,6 @@ Perform deep logical cross-referencing and return the required JSON evaluation."
         return parsed_data
 
     except Exception as e:
-        print(f"\n{'='*60}")
-        print(f"LLM RAW OUTPUT (PARSE FAILED):")
-        print(f"Error: {str(e)}")
-        print(f"Raw response:\n{raw_output[:2000]}")
-        print(f"{'='*60}\n")
         return {
             "success": False,
             "error": f"Nemotron 3 Ultra cross-referencing error: {str(e)}",
