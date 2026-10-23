@@ -170,7 +170,9 @@ Perform deep logical cross-referencing and return the required JSON evaluation."
             "error": f"Nemotron 3 Ultra cross-referencing error: {str(e)}",
             "verdict": "UNVERIFIABLE",
             "confidence_score": 0,
-            "claim_text": claim_text
+            "claim_text": claim_text,
+            "reasoning_summary": "Analysis could not be completed. The AI model's response was truncated due to the complexity or length of this claim. Try submitting a shorter, more specific claim for better results.",
+            "misinfo_type": "Unclassified"
         }
 
 
