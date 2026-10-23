@@ -422,7 +422,7 @@ a:hover {
 }
 
 .source-link-row {
-    margin-bottom: var(--space-2);           /* 8px gap below link before snippet */
+    margin-bottom: var(--space-3);           /* 8px gap below link before snippet */
 }
 
 .source-link-label {
@@ -438,7 +438,7 @@ a:hover {
 
 .source-url {
     font-size: 0.8rem;
-    color: #0a1629;                          /* CHANGED: sidebar-bg dark navy, not muted */
+    color: var(--bg-sidebar);                          /* CHANGED: sidebar-bg dark navy, not muted */
     font-weight: 500;
     word-break: break-all;
 }
