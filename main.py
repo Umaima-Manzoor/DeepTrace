@@ -18,6 +18,8 @@ app = FastAPI(title="DeepTrace", version="1.0.0")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")          # where to look for the template files
 
+templates.env.globals["NANO_MODEL"] = settings.NVIDIA_NANO_MODEL
+templates.env.globals["ULTRA_MODEL"] = settings.NVIDIA_ULTRA_MODEL
 
 @app.get("/", response_class=HTMLResponse)      # run this function when a GET request is sent and this route returns HTML
 async def home(request: Request):   #Async: can handle multiple requests simultaneously - renders the home page with the claim input form - Request: HTTP object

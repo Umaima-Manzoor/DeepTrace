@@ -418,22 +418,22 @@ a:hover {
 .source-title {
     font-size: 0.85rem;
     color: var(--text-secondary);
-    margin-bottom: var(--space-1);      
+    margin-bottom: 2px;     
 }
 
 .source-link {
     font-size: 0.8rem;
-    color: var(--text-muted);                /* "Source Link:" label text in muted gray */
-    margin-bottom: var(--space-3);           /* 12px gap below link before snippet starts */
+    color: var(--text-muted);
+    margin-bottom: var(--space-2);
 }
 
 .source-link a {
-    color: #1a3a6e;                          /* dark navy blue — darker than primary, stands out */
+    color: #0a1629;
     font-weight: 500;
 }
 
 .source-link a:hover {
-    color: var(--primary);                   /* brightens to signal blue on hover */
+    color: var(--primary);
     text-decoration: underline;
 }
 
