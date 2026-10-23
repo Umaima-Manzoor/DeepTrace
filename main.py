@@ -44,19 +44,57 @@ async def verify(request: Request, claim_text: str = Form(...), batch_mode: str 
                 {"error_message": extraction.get("error", "Claim extraction failed.")}
             )
 
-        # Stage 2: Retrieve live sources for the primary claim
-        primary_claim = extraction["claims"][0]
-        sources_data = retrieve_sources(primary_claim["search_query"])
+        # Determine which claims to process - single mode uses first claim only, batch uses all (capped at 5)
+        all_claims = extraction.get("claims", [])
+        if is_batch:
+            claims_to_process = all_claims[:5]      # cap at 5 to prevent excessive API calls and wait times
+        else:
+            claims_to_process = all_claims[:1]      # single mode: primary claim only
 
-        # Stage 3: Cross-reference claim against sources
-        verdict_data = cross_reference_claim(primary_claim, sources_data)
+        # Stages 2-4: Retrieve, Cross-Reference, Report - for each claim
+        reports = []
+        for claim in claims_to_process:
+            try:
+                sources_data = retrieve_sources(claim["search_query"])
+                verdict_data = cross_reference_claim(claim, sources_data)
+                report = generate_verification_report(claim, sources_data, verdict_data)
+                reports.append(report)
+            except Exception as e:
+                # Per-claim error handling: one failed claim doesn't kill the entire batch
+                reports.append({
+                    "success": False,
+                    "is_mock": False,
+                    "claim_text": claim.get("claim_text", "Unknown claim"),
+                    "verdict": "UNVERIFIABLE",
+                    "verdict_badge_class": "verdict-unverifiable",
+                    "confidence_score": 0,
+                    "misinfo_type": "Unclassified",
+                    "reasoning_summary": f"Analysis failed for this claim: {str(e)}",
+                    "key_contradiction": None,
+                    "metrics": {
+                        "total_sources": 0,
+                        "supports_count": 0,
+                        "contradicts_count": 0,
+                        "origin_count": 0,
+                        "neutral_count": 0,
+                        "tier_1_count": 0,
+                        "tier_2_count": 0,
+                        "tier_3_count": 0,
+                        "tier_4_count": 0,
+                        "high_trust_ratio": "0%"
+                    },
+                    "sources": [],
+                    "export_markdown": ""
+                })
 
-        # Stage 4: Generate unified report
-        report = generate_verification_report(primary_claim, sources_data, verdict_data)
+        # Combine all markdown reports into a single downloadable document
+        combined_markdown = "\n\n---\n\n".join(
+            r.get("export_markdown", "") for r in reports if r.get("export_markdown")
+        )
 
         return templates.TemplateResponse(
             request, "results.html",
-            {"report": report}
+            {"reports": reports, "is_batch": is_batch, "combined_markdown": combined_markdown}
         )
 
     except Exception as e:
