@@ -17,16 +17,23 @@
       hx-target="#results-area"
       hx-swap="innerHTML"
       hx-indicator="#loading"
-      hx-on::before-request="document.getElementById('results-area').innerHTML = ''">       <!-- clears the screen with the previous results when new verification is run -->
+      hx-on::before-request="
+          var text = document.querySelector('[name=claim_text]').value.trim();
+          if (!text) {
+              event.preventDefault();
+              document.getElementById('results-area').innerHTML = '<div class=\'error-box\'>Paste a claim, headline, or article excerpt to get started.</div>';
+              return;
+          }
+          document.getElementById('results-area').innerHTML = '';
+      "
+      hx-on::after-request="if(event.detail.failed) { document.body.classList.remove('htmx-request'); }">       <!-- clears the screen with the previous results when new verification is run -->
 
     <textarea
         name="claim_text"
         class="claim-textarea"
         placeholder="Paste a claim to verify. For example: NASA scientists confirmed the discovery of an ancient alien spacecraft beneath Antarctic ice."
-        required
-        oninvalid="this.setCustomValidity('Paste a claim, headline, or article excerpt to get started.')"
-        oninput="this.setCustomValidity('')"
     ></textarea>
+    
     <div class="form-actions">
         <button type="submit" class="btn-primary">
             Run Verification
