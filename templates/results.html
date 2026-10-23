@@ -64,7 +64,10 @@
             <span class="tier-badge {{ source.badge_class }}">{{ source.tier_label }}</span>
         </div>
         <div class="source-title">{{ source.title }}</div>
-        <a href="{{ source.url }}" target="_blank" rel="noopener" class="source-url">{{ source.url }}</a>
+        <div class="source-link-row">
+            <span class="source-link-label">Source Link:</span>
+            <a href="{{ source.url }}" target="_blank" rel="noopener" class="source-url">{{ source.domain }}</a>
+        </div>
         <p class="source-snippet">
             <span class="stance-label stance-{{ source.stance | lower }}">{{ source.stance }}:</span>
             {{ source.stance_summary }}
