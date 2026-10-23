@@ -98,14 +98,14 @@ def _robust_json_parse(raw_output: str) -> dict:
     # closing }. We find the last } (end of the last complete stance entry), truncate
     # there, and append ]} to close the source_stances array and root object.
     stripped = raw_output.strip()
-    if stripped.startswith('{'):
+    if stripped.startswith('{'):            # no need to repair if not in json - prose/garbage
         last_brace = stripped.rfind('}')
         if last_brace > 50:       # only if we have a substantial amount of valid JSON
-            repaired = stripped[:last_brace + 1] + ']}'
+            repaired = stripped[:last_brace + 1] + ']}'     # ] for source_stances      } root object
             try:
                 return json.loads(repaired)
             except json.JSONDecodeError:
-                pass
+                pass            # if failed then fall through to the final error
 
     # All strategies exhausted — raise so the caller's except block handles it
     raise json.JSONDecodeError("Could not extract valid JSON from LLM response", raw_output, 0)
