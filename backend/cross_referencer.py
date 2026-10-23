@@ -152,6 +152,11 @@ Perform deep logical cross-referencing and return the required JSON evaluation."
         return parsed_data
 
     except Exception as e:
+        print(f"\n{'='*60}")
+        print(f"LLM RAW OUTPUT (PARSE FAILED):")
+        print(f"Error: {str(e)}")
+        print(f"Raw response:\n{raw_output[:2000]}")
+        print(f"{'='*60}\n")
         return {
             "success": False,
             "error": f"Nemotron 3 Ultra cross-referencing error: {str(e)}",
