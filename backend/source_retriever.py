@@ -15,22 +15,27 @@ from config.settings import settings
 TIER_1_DOMAINS = {
     "nasa.gov", "who.int", "cdc.gov", "nih.gov", "un.org",
     "nature.com", "science.org", "sciencedirect.com", "arxiv.org",
-    "gov.uk", "europa.eu", "whitehouse.gov", "state.gov"
+    "gov.uk", "europa.eu", "whitehouse.gov", "state.gov",
+    "esa.int", "home.cern", "iopscience.iop.org", "eso.org",
+    "pmc.ncbi.nlm.nih.gov"
 }
 
-# Tier 2: Primary Global News Wire Agencies (Highest Editorial Standards)
+# Tier 2: Primary Global News Wire Agencies & Authoritative Reference Works
 TIER_2_DOMAINS = {
     "reuters.com", "apnews.com", "afp.com", "bloomberg.com",
-    "upi.com", "prnewswire.com", "businesswire.com"
+    "upi.com", "prnewswire.com", "businesswire.com",
+    "britannica.com", "ebsco.com", "cerncourier.com", "ncse.ngo"
 }
 
-# Tier 3: Established Mainstream Media & Science Journalism
+# Tier 3: Established Mainstream Media, Science Journalism & Curated Encyclopedias
 TIER_3_DOMAINS = {
     "bbc.com", "bbc.co.uk", "nytimes.com", "washingtonpost.com",
     "theguardian.com", "wsj.com", "ft.com", "aljazeera.com",
     "cnn.com", "nbcnews.com", "cbsnews.com", "abcnews.go.com",
     "time.com", "economist.com", "theatlantic.com", "forbes.com",
-    "scientificamerican.com", "nationalgeographic.com", "space.com"
+    "scientificamerican.com", "nationalgeographic.com", "space.com",
+    "en.wikipedia.org", "simple.wikipedia.org",
+    "sciencefocus.com", "skyatnightmagazine.com", "planetary.org"
 }
 
 

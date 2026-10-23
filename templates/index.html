@@ -16,7 +16,9 @@
       hx-post="/verify"             
       hx-target="#results-area"
       hx-swap="innerHTML"
-      hx-indicator="#loading">
+      hx-indicator="#loading"
+      hx-on::before-request="document.getElementById('results-area').innerHTML = ''">       <!-- clears the screen with the previous results when new verification is run -->
+
     <textarea
         name="claim_text"
         class="claim-textarea"
