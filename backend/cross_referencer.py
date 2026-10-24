@@ -130,7 +130,7 @@ def cross_reference_claim(claim: dict, sources_data: dict) -> dict:
 
     # Check if a live Nebius API key is configured
     key_status = settings.validate_keys()
-    if not key_status["nebius"]:
+    if not key_status["llm"]:
         # Seamless fallback simulation while Nebius account review is pending
         return _simulate_cross_reference_fallback(claim_text, sources)
 

@@ -67,7 +67,7 @@ def extract_claims(raw_text: str, batch_mode: bool = False) -> dict:
 
     # Check if a live Nebius API key is configured
     key_status = settings.validate_keys()
-    if not key_status["nebius"]:        # simulation in case of missing or invalid Nebius API key
+    if not key_status["llm"]:        # simulation in case of missing or invalid LLM API key
         return _simulate_extraction_fallback(raw_text, batch_mode)
 
     try:
