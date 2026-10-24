@@ -77,8 +77,6 @@ def get_tavily_client() -> TavilyClient | None:
     return TavilyClient(api_key=settings.TAVILY_API_KEY)
 
 
-
-
 # takes a full URL, extracts its root domain, and classifies its credibility tier.
 # dict: {"tier": int, "label": str, "badge_class": str, "domain": str}
 def classify_domain_tier(url: str) -> dict:
@@ -141,9 +139,55 @@ def classify_domain_tier(url: str) -> dict:
         }
 
 
+# performs the live Tavily API search and returns the raw results list
+def _search_tavily(query: str, limit: int) -> list:
+    client = get_tavily_client()
+    if not client:
+        return None         # signals caller to use simulation fallback
+
+    # Perform live search via Tavily AI
+    search_response = client.search(
+        query=query.strip(),
+        search_depth="advanced",         # search_depth=advanced extracts clean paragraph content from each page, filters out ads, navigation menus, cookie banners, and other noise.
+        max_results=limit,
+        include_answer=False,            # don't want Tavily's opinion
+        include_raw_content=False        # don't want full page HTML, just clean text snippets
+    )
+
+    return search_response.get("results", [])    # extracting results list from Tavily's JSON response - empty list if no results found
 
 
-# Queries Tavily AI Search API for live grounding evidence across the web. 
+# processes raw Tavily results: cleans snippets, truncates, classifies tiers, assigns IDs
+def _process_results(raw_results: list) -> list:
+    structured_sources = []
+
+    for index, item in enumerate(raw_results, start=1):     # source IDs start at 1 for display purposes
+        url = item.get("url", "")
+        tier_info = classify_domain_tier(url)
+
+        raw_content = item.get("content", "").strip()
+        clean_content = _clean_snippet(raw_content)         # strip markdown noise first
+        short_content = _truncate_snippet(clean_content)     # then truncate to ~200 words
+
+        source_entry = {
+            "source_id": index,
+            "title": item.get("title", "Untitled Source"),
+            "url": url,
+            "snippet": short_content,
+            "score": round(item.get("score", 0.0), 3),      # 3 dp
+            "domain": tier_info["domain"],
+            "tier": tier_info["tier"],
+            "tier_label": tier_info["label"],
+            "badge_class": tier_info["badge_class"]
+        }
+        structured_sources.append(source_entry)
+
+    # Sort sources: highest credibility first (Tier 1 -> Tier 4), then by Tavily relevance score
+    structured_sources.sort(key=lambda x: (x["tier"], -x["score"]))     # ascending tier (1 is best), descending score
+    return structured_sources
+
+
+# Queries Tavily AI Search API for live grounding evidence across the web.
 # dict: {"success": bool, "query": str, "total_found": int, "sources": list}
 def retrieve_sources(query: str, max_results: int | None = None) -> dict:
     if not query or not query.strip():
@@ -156,48 +200,15 @@ def retrieve_sources(query: str, max_results: int | None = None) -> dict:
         }
 
     limit = max_results or settings.MAX_SEARCH_RESULTS      # reducing sources per claim in batch mode
-    client = get_tavily_client()
-
-    # If Tavily key is missing, use offline mock simulator
-    if not client:
-        return _simulate_sources_fallback(query, limit)
 
     try:
-        # Perform live search via Tavily AI
-        search_response = client.search(
-            query=query.strip(),
-            search_depth="advanced",         # search_depth=advanced extracts clean paragraph content from each page, filters out ads, navigation menus, cookie banners, and other noise.
-            max_results=limit,
-            include_answer=False,            # don't want Tavily's opinion
-            include_raw_content=False        # don't want full page HTML, just clean text snippets          
-        )
+        raw_results = _search_tavily(query, limit)
 
-        raw_results = search_response.get("results", [])    # extracting results list from Tavily's JSON response - empty list if no results found
-        structured_sources = [] 
+        # If Tavily key is missing, use offline mock simulator
+        if raw_results is None:
+            return _simulate_sources_fallback(query, limit)
 
-        for index, item in enumerate(raw_results, start=1):     # source IDs start at 1 for display purposes
-            url = item.get("url", "")
-            tier_info = classify_domain_tier(url)
-
-            raw_content = item.get("content", "").strip()
-            clean_content = _clean_snippet(raw_content)         # strip markdown noise first
-            short_content = _truncate_snippet(clean_content)     # then truncate to ~200 words
-
-            source_entry = {
-                "source_id": index,
-                "title": item.get("title", "Untitled Source"),
-                "url": url,
-                "snippet": short_content,
-                "score": round(item.get("score", 0.0), 3),      # 3 dp
-                "domain": tier_info["domain"],
-                "tier": tier_info["tier"],
-                "tier_label": tier_info["label"],
-                "badge_class": tier_info["badge_class"]
-            }
-            structured_sources.append(source_entry)
-
-        # Sort sources: highest credibility first (Tier 1 -> Tier 4), then by Tavily relevance score
-        structured_sources.sort(key=lambda x: (x["tier"], -x["score"]))     # ascending tier (1 is best), descending score
+        structured_sources = _process_results(raw_results)
 
         return {
             "success": True,
@@ -215,6 +226,7 @@ def retrieve_sources(query: str, max_results: int | None = None) -> dict:
             "total_found": 0,
             "sources": []
         }
+
 
 # Mock source generator for offline development.
 def _simulate_sources_fallback(query: str, limit: int) -> dict:

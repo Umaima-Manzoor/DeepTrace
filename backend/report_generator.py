@@ -5,6 +5,15 @@ computes aggregate credibility metrics, and produces a unified report dossier.
 
 from datetime import datetime
 
+# maps verdict strings to CSS badge classes defined in static/style.css
+VERDICT_BADGE_MAP = {
+    "VERIFIED": "verdict-verified",
+    "DISPUTED": "verdict-disputed",
+    "DEBUNKED": "verdict-debunked",
+    "UNVERIFIABLE": "verdict-unverifiable"
+}
+
+
 # synthesizes outputs from Stages 1, 2, and 3 into a clean, comprehensive master report.
 # returns a master report dictionary ready for UI rendering and file export.
 def generate_verification_report(claim_data: dict, sources_data: dict, verdict_data: dict) -> dict:
@@ -19,17 +28,9 @@ def generate_verification_report(claim_data: dict, sources_data: dict, verdict_d
     raw_stances = verdict_data.get("source_stances", [])
 
     enriched_sources = _enrich_sources_with_stances(raw_sources, raw_stances)       # map stances back to sources by matching source_id or domain
-
     metrics = _compute_aggregate_metrics(enriched_sources)      # compute aggregate credibility & stance distribution metrics
 
-    # map verdict to UI badge class defined in assets/style.css
-    badge_map = {
-        "VERIFIED": "verdict-verified",
-        "DISPUTED": "verdict-disputed",
-        "DEBUNKED": "verdict-debunked",
-        "UNVERIFIABLE": "verdict-unverifiable"
-    }
-    verdict_badge_class = badge_map.get(verdict, "verdict-unverifiable")
+    verdict_badge_class = VERDICT_BADGE_MAP.get(verdict, "verdict-unverifiable")
 
     is_mock = claim_data.get("is_mock", False) or sources_data.get("is_mock", False) or verdict_data.get("is_mock", False)      # checks if any stage ran in simulation mode
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M PKT")
@@ -68,7 +69,7 @@ def _enrich_sources_with_stances(sources: list, stances: list) -> list:
         "ORIGIN_OF_CLAIM": "#F59E0B",    # Yellow
         "NEUTRAL": "#94A3B8"             # Slate Grey
     }
-    
+
     enriched = []
     for s in sources:
         sid = s.get("source_id")
