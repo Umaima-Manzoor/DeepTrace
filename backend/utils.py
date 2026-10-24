@@ -3,12 +3,12 @@
 from openai import OpenAI
 from config.settings import settings
 
-# initializes an OpenAI-compatible client pointed at Nebius Token Factory.
+# initializes an OpenAI-compatible client pointed at the configured LLM provider.
 # loads credentials and base URL from config/settings.py.
-def get_nebius_client() -> OpenAI:
+def get_llm_client() -> OpenAI:
     return OpenAI(
-        base_url=settings.NEBIUS_BASE_URL,
-        api_key=settings.NEBIUS_API_KEY or "dummy_key_for_testing"
+        base_url=settings.LLM_BASE_URL,
+        api_key=settings.LLM_API_KEY or "dummy_key_for_testing"
     )
 
 

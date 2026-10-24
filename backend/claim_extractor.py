@@ -3,7 +3,7 @@
 import json                 # Nemotron outputs in raw JSON format, which we parse into Python dictionaries.
 from pathlib import Path    # reads prompt text from external file instead of hardcoding in Python
 from config.settings import settings
-from backend.utils import clean_json_string, get_nebius_client  # shared utilities
+from backend.utils import clean_json_string, get_llm_client  # shared utilities
 
 # system prompt for Nemotron Nano — loaded from external text file so it can be edited without touching Python code
 EXTRACTION_SYSTEM_PROMPT = (Path(__file__).parent / "prompts" / "extraction.txt").read_text(encoding="utf-8")
@@ -20,13 +20,13 @@ def _build_user_prompt(raw_text: str, batch_mode: bool) -> str:
     return f"{mode_instruction}\n\nINPUT TEXT:\n\"\"\"\n{raw_text.strip()}\n\"\"\""      # text to analyze, not instructions
 
 
-# sends the prompt to Nemotron Nano and returns the raw text response
-def _call_nano(user_prompt: str) -> str:
-    client = get_nebius_client()
+# sends the prompt to the fast model and returns the raw text response
+def _call_fast_model(user_prompt: str) -> str:
+    client = get_llm_client()
 
-    # Execute cloud inference on Nebius Token Factory
+    # Execute cloud inference via configured LLM provider
     response = client.chat.completions.create(
-        model=settings.NVIDIA_NANO_MODEL,
+        model=settings.FAST_MODEL,
         temperature=settings.DEFAULT_TEMPERATURE,
         max_tokens=settings.MAX_TOKENS_EXTRACTION,
         messages=[
@@ -72,14 +72,14 @@ def extract_claims(raw_text: str, batch_mode: bool = False) -> dict:
 
     try:
         user_prompt = _build_user_prompt(raw_text, batch_mode)
-        raw_output = _call_nano(user_prompt)
+        raw_output = _call_fast_model(user_prompt)
         return _parse_extraction_response(raw_output)
 
     except Exception as e:
         # Graceful error handling: return error dictionary rather than crashing
         return {
             "success": False,
-            "error": f"Nemotron Nano inference error: {str(e)}",
+            "error": f"LLM inference error: {str(e)}",
             "total_claims": 0,
             "claims": []
         }

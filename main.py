@@ -121,7 +121,7 @@ async def health():
     key_status = settings.validate_keys()
     return {
         "status": "ok",
-        "nebius_key": key_status["nebius"],
-        "tavily_key": key_status["tavily"],
+        "llm_key": key_status["llm"],
+        "search_key": key_status["search"],
         "environment": settings.APP_ENV
     }

@@ -23,32 +23,32 @@ class Settings:     #Central configuration store for DeepTrace verification pipe
     APP_ENV: str = os.getenv("APP_ENV", "development").strip()      # fallback if not found
     DEBUG: bool = APP_ENV == "development"
 
-    # Nebius Token Factory Inference API
-    NEBIUS_API_KEY: str = os.getenv("NEBIUS_API_KEY", "").strip()     # warning instead of crashing on missing key 
-    NEBIUS_BASE_URL: str = os.getenv("NEBIUS_BASE_URL", "https://api.tokenfactory.nebius.com/v1").strip()
+    # LLM Inference API (any OpenAI-compatible provider: Nebius, Groq, OpenAI, etc.)
+    LLM_API_KEY: str = os.getenv("LLM_API_KEY", "").strip()     # warning instead of crashing on missing key
+    LLM_BASE_URL: str = os.getenv("LLM_BASE_URL", "https://api.tokenfactory.nebius.com/v1").strip()
 
-    # NVIDIA Nemotron Models 
-    NVIDIA_NANO_MODEL: str = os.getenv("NVIDIA_NANO_MODEL", "nvidia/nemotron-nano").strip()
-    NVIDIA_ULTRA_MODEL: str = os.getenv("NVIDIA_ULTRA_MODEL", "nvidia/nemotron-3-ultra").strip()        # for heavy reasoning tasks like cross-referencing and synthesis
+    # LLM Models
+    FAST_MODEL: str = os.getenv("FAST_MODEL", "nvidia/nemotron-nano").strip()        # lightweight model for claim extraction
+    REASONING_MODEL: str = os.getenv("REASONING_MODEL", "nvidia/nemotron-3-ultra").strip()        # heavy reasoning model for cross-referencing and synthesis
 
-    # Tavily AI Search Engine
-    TAVILY_API_KEY: str = os.getenv("TAVILY_API_KEY", "").strip()   # gives Nemotron real-time grounded search results
+    # Web Search API (Tavily, Serper, Brave, etc.)
+    SEARCH_API_KEY: str = os.getenv("SEARCH_API_KEY", "").strip()   # gives the LLM real-time grounded search results
 
     # Pipeline Settings & Thresholds
-    MAX_SEARCH_RESULTS: int = int(os.getenv("MAX_SEARCH_RESULTS", "8"))     # loads max no. of web pages Tavily should search for each claim
+    MAX_SEARCH_RESULTS: int = int(os.getenv("MAX_SEARCH_RESULTS", "8"))     # loads max no. of web pages the search API should return for each claim
     CONFIDENCE_THRESHOLD: float = float(os.getenv("CONFIDENCE_THRESHOLD", "0.75"))  # loads confidence percentage below which a claim is considered unverified/disputed
 
     # LLM Operational Hyperparameters
     DEFAULT_TEMPERATURE: float = 0.2    # Strict factual reasoning, minimal hallucination, no invention
-    MAX_TOKENS_EXTRACTION: int = 1024    # Nano token limit for claim extraction
-    MAX_TOKENS_SYNTHESIS: int = 4000    # Ultra token limit for cross-referencing analysis - more because of the need to synthesize multiple sources and provide a detailed explanation
+    MAX_TOKENS_EXTRACTION: int = 1024    # Fast model token limit for claim extraction
+    MAX_TOKENS_SYNTHESIS: int = 4000    # Reasoning model token limit for cross-referencing analysis - more because of the need to synthesize multiple sources and provide a detailed explanation
 
     @classmethod
     def validate_keys(cls) -> dict[str, bool]:
         """Validates whether required API credentials are provided."""
         return {
-            "nebius": bool(cls.NEBIUS_API_KEY and not cls.NEBIUS_API_KEY.startswith("your_")),
-            "tavily": bool(cls.TAVILY_API_KEY and not cls.TAVILY_API_KEY.startswith("your_")),
+            "llm": bool(cls.LLM_API_KEY and not cls.LLM_API_KEY.startswith("your_")),
+            "search": bool(cls.SEARCH_API_KEY and not cls.SEARCH_API_KEY.startswith("your_")),
         }
 
 

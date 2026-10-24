@@ -70,11 +70,11 @@ def _truncate_snippet(text: str, max_words: int = 200) -> str:
     return truncated + "..."                  # hard cut with ellipsis if no clean boundary found
 
 
-# Initializes and returns an authenticated TavilyClient - returns None if the key is missing or invalid.
-def get_tavily_client() -> TavilyClient | None:
-    if not settings.TAVILY_API_KEY or settings.TAVILY_API_KEY.startswith("your_"):
+# Initializes and returns an authenticated search client - returns None if the key is missing or invalid.
+def get_search_client() -> TavilyClient | None:
+    if not settings.SEARCH_API_KEY or settings.SEARCH_API_KEY.startswith("your_"):
         return None
-    return TavilyClient(api_key=settings.TAVILY_API_KEY)
+    return TavilyClient(api_key=settings.SEARCH_API_KEY)
 
 
 # takes a full URL, extracts its root domain, and classifies its credibility tier.
@@ -139,13 +139,13 @@ def classify_domain_tier(url: str) -> dict:
         }
 
 
-# performs the live Tavily API search and returns the raw results list
-def _search_tavily(query: str, limit: int) -> list:
-    client = get_tavily_client()
+# performs the live web search and returns the raw results list
+def _search_web(query: str, limit: int) -> list:
+    client = get_search_client()
     if not client:
         return None         # signals caller to use simulation fallback
 
-    # Perform live search via Tavily AI
+    # Perform live search via configured search AI
     search_response = client.search(
         query=query.strip(),
         search_depth="advanced",         # search_depth=advanced extracts clean paragraph content from each page, filters out ads, navigation menus, cookie banners, and other noise.
@@ -154,7 +154,7 @@ def _search_tavily(query: str, limit: int) -> list:
         include_raw_content=False        # don't want full page HTML, just clean text snippets
     )
 
-    return search_response.get("results", [])    # extracting results list from Tavily's JSON response - empty list if no results found
+    return search_response.get("results", [])    # extracting results list from search API's JSON response - empty list if no results found
 
 
 # processes raw Tavily results: cleans snippets, truncates, classifies tiers, assigns IDs
@@ -187,7 +187,7 @@ def _process_results(raw_results: list) -> list:
     return structured_sources
 
 
-# Queries Tavily AI Search API for live grounding evidence across the web.
+# Queries the configured search AI Search API for live grounding evidence across the web.
 # dict: {"success": bool, "query": str, "total_found": int, "sources": list}
 def retrieve_sources(query: str, max_results: int | None = None) -> dict:
     if not query or not query.strip():
@@ -202,7 +202,7 @@ def retrieve_sources(query: str, max_results: int | None = None) -> dict:
     limit = max_results or settings.MAX_SEARCH_RESULTS      # reducing sources per claim in batch mode
 
     try:
-        raw_results = _search_tavily(query, limit)
+        raw_results = _search_web(query, limit)
 
         # If Tavily key is missing, use offline mock simulator
         if raw_results is None:
@@ -221,7 +221,7 @@ def retrieve_sources(query: str, max_results: int | None = None) -> dict:
     except Exception as e:
         return {
             "success": False,
-            "error": f"Tavily Search API error: {str(e)}",
+            "error": f"Search API error: {str(e)}",
             "query": query,
             "total_found": 0,
             "sources": []

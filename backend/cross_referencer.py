@@ -8,7 +8,7 @@ import json             # Ultra returns raw JSON - need to convert to Python dic
 import re               # regex fallback for extracting JSON from noisy LLM output
 from pathlib import Path    # NEW: reads prompt text from external file instead of hardcoding in Python
 from config.settings import settings
-from backend.utils import get_nebius_client, clean_json_string      # shared utilities
+from backend.utils import get_llm_client, clean_json_string      # shared utilities
 
 
 # system prompt for Nemotron 3 Ultra - instructs the model to act as an investigative cross-examiner
@@ -93,13 +93,13 @@ RETRIEVED LIVE EVIDENCE DOSSIER ({len(sources)} sources examined):
 Perform deep logical cross-referencing and return the required JSON evaluation."""
 
 
-# sends the prompt to Nemotron 3 Ultra and returns the raw text response
-def _call_ultra(user_content: str) -> str:
-    client = get_nebius_client()
+# sends the prompt to the reasoning model and returns the raw text response
+def _call_reasoning_model(user_content: str) -> str:
+    client = get_llm_client()
 
-    # Execute high-reasoning cloud inference on Nebius Token Factory
+    # Execute high-reasoning cloud inference via configured LLM provider
     response = client.chat.completions.create(
-        model=settings.NVIDIA_ULTRA_MODEL,
+        model=settings.REASONING_MODEL,
         temperature=settings.DEFAULT_TEMPERATURE,
         max_tokens=settings.MAX_TOKENS_SYNTHESIS,
         messages=[
@@ -136,7 +136,7 @@ def cross_reference_claim(claim: dict, sources_data: dict) -> dict:
 
     try:
         user_content = _build_cross_reference_prompt(claim_text, sources)
-        raw_output = _call_ultra(user_content)
+        raw_output = _call_reasoning_model(user_content)
         parsed_data = _robust_json_parse(raw_output)        # multi-strategy JSON extraction replaces single json.loads call
 
         parsed_data["success"] = True
@@ -147,7 +147,7 @@ def cross_reference_claim(claim: dict, sources_data: dict) -> dict:
     except Exception as e:
         return {
             "success": False,
-            "error": f"Nemotron 3 Ultra cross-referencing error: {str(e)}",
+            "error": f"LLM cross-referencing error: {str(e)}",
             "verdict": "UNVERIFIABLE",
             "confidence_score": 0,
             "claim_text": claim_text,
