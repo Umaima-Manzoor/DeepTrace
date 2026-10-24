@@ -6,65 +6,14 @@ and synthesize a grounded factual verdict.
 
 import json             # Ultra returns raw JSON - need to convert to Python dict
 import re               # regex fallback for extracting JSON from noisy LLM output
+from pathlib import Path    # NEW: reads prompt text from external file instead of hardcoding in Python
 from config.settings import settings
 from backend.utils import get_nebius_client, clean_json_string      # shared utilities
 
 
 # system prompt for Nemotron 3 Ultra - instructs the model to act as an investigative cross-examiner
-CROSS_REFERENCE_SYSTEM_PROMPT = """You are DeepTrace's master investigative fact-verification and logical cross-referencing engine.
-Your task is to critically analyze an atomic factual claim against a pool of live retrieved web sources and determine the objective truth.
-
-OPERATIONAL PRINCIPLES:
-1. STANCE CLASSIFICATION: For every source provided, classify its stance toward the claim:
-   - "SUPPORTS": Source confirms or corroborates the claim's core factual assertions, even if using different wording or providing additional context beyond the claim.
-   - "CONTRADICTS": Source directly refutes, debunks, or provides evidence proving the claim false.
-   - "NEUTRAL": Source discusses the subject but provides no conclusive confirmation or denial of the specific claim. Use this SPARINGLY — only when the source truly does not address the claim's core facts.
-   - "ORIGIN_OF_CLAIM": Source is the unverified tabloid/social post where the rumor originated.
-
-   CRITICAL: Do NOT default to NEUTRAL out of caution. If a source states "water vapor was detected on K2-18b" and the claim says "water vapor was detected on K2-18b", that is SUPPORTS — even if the source also contains 500 words of additional context. Match on the core factual assertion, not the exact phrasing.
-
-2. DOMAIN WEIGHTING:
-   - Prioritize Tier 1 (Official Govt/Academic) and Tier 2 (Wire Services: Reuters, AP).
-   - A claim contradicted by Tier 1/2 sources MUST be classified as DEBUNKED.
-   - If sources directly contradict each other with no Tier 1 resolution, classify as DISPUTED.
-
-3. MISINFORMATION TAXONOMY:
-   If the claim is not fully verified, categorize the deception type:
-   - "Fabricated Data": Completely invented figures, events, or discoveries.
-   - "False Attribution": Real quote/action falsely credited to a person or agency (e.g. NASA).
-   - "Persistent Myth": A widely repeated false belief that has been debunked multiple times but continues to circulate (e.g., "the Great Wall is visible from space").
-   - "Cherry-Picking": True data taken selectively to create a misleading conclusion.
-   - "Out of Context": Genuine historical event or quote applied to the wrong situation.
-   - "Exaggeration": Based on real facts but significantly overstates the findings or implications.
-   - "Satire / Parody": Satirical content mistaken for real news.
-   - "Synthetic Media": Linguistic patterns suggesting AI-generated hallucination.
-   - "Legitimate": Verified factual report.
-
-4. OVERALL VERDICT:
-   - "VERIFIED": High consensus among Tier 1/2 sources.
-   - "DISPUTED": Conflicting reports among reputable outlets.
-   - "DEBUNKED": Multiple authoritative sources directly contradict or disprove the claim.
-   - "UNVERIFIABLE": Insufficient evidence to confirm or deny.
-
-5. OUTPUT FORMAT: Output MUST be valid, raw JSON only. Do NOT include markdown code fences (like ```json), commentary, or extra text.
-
-JSON OUTPUT STRUCTURE:
-{
-  "verdict": "DEBUNKED",
-  "confidence_score": 94,
-  "misinfo_type": "Fabricated Data",
-  "reasoning_summary": "Cohesive 3-4 sentence plain-English explanation of why this verdict was reached, citing specific findings.",
-  "key_contradiction": "Specific conflicting statements identified across sources (or null if none)",
-  "source_stances": [
-    {
-      "source_id": 1,
-      "domain": "nasa.gov",
-      "stance": "CONTRADICTS",
-      "one_line_summary": "Official NASA archives show zero records of any such discovery."
-    }
-  ]
-}
-"""
+# loaded from external text file so it can be edited without touching Python code
+CROSS_REFERENCE_SYSTEM_PROMPT = (Path(__file__).parent / "prompts" / "cross_reference.txt").read_text(encoding="utf-8")
 
 
 # Attempts multiple strategies to extract valid JSON from LLM output.
@@ -110,6 +59,58 @@ def _robust_json_parse(raw_output: str) -> dict:
     # All strategies exhausted — raise so the caller's except block handles it
     raise json.JSONDecodeError("Could not extract valid JSON from LLM response", raw_output, 0)
 
+
+# raw sources -> numbered list - used in cross_reference_claim()
+def _format_evidence_dossier(sources: list) -> str:
+    if not sources:
+        return "No external sources were retrieved."
+
+    dossier_lines = []
+    for s in sources:
+        snippet = s.get("snippet", "No snippet available.")
+        # NOTE: retriever already truncates snippets to 200 words, so no redundant truncation here
+
+        dossier_lines.append(
+            f"--- SOURCE #{s.get('source_id', '?')} ---\n"
+            f"Title: {s.get('title', 'Unknown')}\n"
+            f"Domain: {s.get('domain', 'Unknown')} ({s.get('tier_label', 'Tier 4')})\n"
+            f"URL: {s.get('url', '')}\n"
+            f"Snippet: {snippet}\n"
+        )
+    return "\n".join(dossier_lines)     # LLMs process structured text more accurately than raw JSON format
+
+
+# builds the full user prompt by combining the claim text with formatted source evidence
+def _build_cross_reference_prompt(claim_text: str, sources: list) -> str:
+    evidence_text = _format_evidence_dossier(sources)       # formats sources into numbered list for LLM prompt (for Nemotron 3 Ultra)
+
+    return f"""CLAIM TO VERIFY:
+\"\"\"{claim_text}\"\"\"
+
+RETRIEVED LIVE EVIDENCE DOSSIER ({len(sources)} sources examined):
+{evidence_text}
+
+Perform deep logical cross-referencing and return the required JSON evaluation."""
+
+
+# sends the prompt to Nemotron 3 Ultra and returns the raw text response
+def _call_ultra(user_content: str) -> str:
+    client = get_nebius_client()
+
+    # Execute high-reasoning cloud inference on Nebius Token Factory
+    response = client.chat.completions.create(
+        model=settings.NVIDIA_ULTRA_MODEL,
+        temperature=settings.DEFAULT_TEMPERATURE,
+        max_tokens=settings.MAX_TOKENS_SYNTHESIS,
+        messages=[
+            {"role": "system", "content": CROSS_REFERENCE_SYSTEM_PROMPT},
+            {"role": "user", "content": user_content}
+        ]
+    )
+
+    return response.choices[0].message.content.strip()
+
+
 # core cross-referencing pipeline
 # claim: dict per claim from stage 1 (claim_extractor)
 # sources_data: dict from stage 2 (source_retriever)
@@ -123,7 +124,7 @@ def cross_reference_claim(claim: dict, sources_data: dict) -> dict:
         return {
             "success": False,
             "error": "No claim text provided for cross-referencing.",
-            "verdict": "UNVERIFIABLE",      # default fallback - prevents crahsing
+            "verdict": "UNVERIFIABLE",      # default fallback - prevents crashing
             "confidence_score": 0
         }
 
@@ -134,29 +135,8 @@ def cross_reference_claim(claim: dict, sources_data: dict) -> dict:
         return _simulate_cross_reference_fallback(claim_text, sources)
 
     try:
-        client = get_nebius_client()
-        evidence_text = _format_evidence_dossier(sources)       # formats sources into numbered list for LLM prompt (for Nemotron 3 Ultra)
-
-        user_content = f"""CLAIM TO VERIFY:
-\"\"\"{claim_text}\"\"\"
-
-RETRIEVED LIVE EVIDENCE DOSSIER ({len(sources)} sources examined):
-{evidence_text}
-
-Perform deep logical cross-referencing and return the required JSON evaluation."""
-
-        # Execute high-reasoning cloud inference on Nebius Token Factory
-        response = client.chat.completions.create(
-            model=settings.NVIDIA_ULTRA_MODEL,
-            temperature=settings.DEFAULT_TEMPERATURE,
-            max_tokens=settings.MAX_TOKENS_SYNTHESIS,
-            messages=[
-                {"role": "system", "content": CROSS_REFERENCE_SYSTEM_PROMPT},
-                {"role": "user", "content": user_content}
-            ]
-        )
-
-        raw_output = response.choices[0].message.content.strip()
+        user_content = _build_cross_reference_prompt(claim_text, sources)
+        raw_output = _call_ultra(user_content)
         parsed_data = _robust_json_parse(raw_output)        # multi-strategy JSON extraction replaces single json.loads call
 
         parsed_data["success"] = True
@@ -174,29 +154,6 @@ Perform deep logical cross-referencing and return the required JSON evaluation."
             "reasoning_summary": "Analysis could not be completed. The AI model's response was truncated due to the complexity or length of this claim. Try submitting a shorter, more specific claim for better results.",
             "misinfo_type": "Unclassified"
         }
-
-
-# raw sources -> numbered list - used in cross_reference_claim()
-def _format_evidence_dossier(sources: list) -> str:
-    if not sources:
-        return "No external sources were retrieved."
-
-    dossier_lines = []
-    for s in sources:
-        snippet = s.get("snippet", "No snippet available.")
-        # Safety net: truncate again in case retriever was bypassed or snippets are still oversized
-        words = snippet.split()
-        if len(words) > 250:
-            snippet = " ".join(words[:250]) + "..."
-
-        dossier_lines.append(
-            f"--- SOURCE #{s.get('source_id', '?')} ---\n"
-            f"Title: {s.get('title', 'Unknown')}\n"
-            f"Domain: {s.get('domain', 'Unknown')} ({s.get('tier_label', 'Tier 4')})\n"
-            f"URL: {s.get('url', '')}\n"
-            f"Snippet: {snippet}\n"
-        )
-    return "\n".join(dossier_lines)     # LLMs process structured text more accurately than raw JSON format
 
 
 # generates fake but realistic verdict data when running without a live Nebius key

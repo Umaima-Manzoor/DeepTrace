@@ -1,33 +1,55 @@
 # uses NVIDIA Nemotron Nano (via Nebius Token Factory) to decompose raw, unstructured user text into structured, verifiable atomic claims.
 
 import json                 # Nemotron outputs in raw JSON format, which we parse into Python dictionaries.
+from pathlib import Path    # reads prompt text from external file instead of hardcoding in Python
 from config.settings import settings
 from backend.utils import clean_json_string, get_nebius_client  # shared utilities
 
-# system prompt for Nemotron Nano
-EXTRACTION_SYSTEM_PROMPT = """You are DeepTrace's high-precision factual claim extraction engine.
-Your task is to analyze user input (rumors, headlines, article excerpts) and decompose it into distinct, verifiable atomic claims.
+# system prompt for Nemotron Nano — loaded from external text file so it can be edited without touching Python code
+EXTRACTION_SYSTEM_PROMPT = (Path(__file__).parent / "prompts" / "extraction.txt").read_text(encoding="utf-8")
 
-RULES:
-1. Extract 1 to 5 atomic factual claims. An atomic claim is a single proposition that can be proven TRUE or FALSE by evidence.
-2. Strip away emotional language, opinions, speculation, and sensationalism.
-3. For each claim, generate an optimized, concise web search query for Tavily to find authoritative reporting.
-4. Categorize each claim (e.g., Science/Space, Politics, Health, Technology, World News, Satire).
-5. Output MUST be valid, raw JSON only. Do NOT include markdown code fences (like ```json), commentary, or extra text.
 
-JSON STRUCTURE:
-{
-  "total_claims": 1,
-  "claims": [
-    {
-      "claim_id": 1,
-      "claim_text": "Exact atomic factual assertion.",
-      "search_query": "Optimized web search query",
-      "category": "Category Name"
-    }
-  ]
-}
-"""
+# builds the user-facing instruction based on whether batch mode is on or off
+def _build_user_prompt(raw_text: str, batch_mode: bool) -> str:
+    # tailor instruction based on batch toggle
+    mode_instruction = (
+        "Extract all major distinct factual claims from this full article."
+        if batch_mode else
+        "Extract the primary core factual claim from this text."
+    )
+    return f"{mode_instruction}\n\nINPUT TEXT:\n\"\"\"\n{raw_text.strip()}\n\"\"\""      # text to analyze, not instructions
+
+
+# sends the prompt to Nemotron Nano and returns the raw text response
+def _call_nano(user_prompt: str) -> str:
+    client = get_nebius_client()
+
+    # Execute cloud inference on Nebius Token Factory
+    response = client.chat.completions.create(
+        model=settings.NVIDIA_NANO_MODEL,
+        temperature=settings.DEFAULT_TEMPERATURE,
+        max_tokens=settings.MAX_TOKENS_EXTRACTION,
+        messages=[
+            {"role": "system", "content": EXTRACTION_SYSTEM_PROMPT},
+            {"role": "user", "content": user_prompt}
+        ]
+    )
+
+    # Extract raw text output from the model
+    return response.choices[0].message.content.strip()
+
+
+# parses the raw LLM output string into a Python dictionary
+def _parse_extraction_response(raw_output: str) -> dict:
+    # Sanitize any accidental markdown code fences (```json ... ```)
+    cleaned_json = clean_json_string(raw_output)
+
+    # Parse string into Python dictionary for looping
+    parsed_data = json.loads(cleaned_json)
+    parsed_data["success"] = True
+    parsed_data["is_mock"] = False
+    return parsed_data
+
 
 # core extraction pipeline
 def extract_claims(raw_text: str, batch_mode: bool = False) -> dict:
@@ -49,39 +71,9 @@ def extract_claims(raw_text: str, batch_mode: bool = False) -> dict:
         return _simulate_extraction_fallback(raw_text, batch_mode)
 
     try:
-        client = get_nebius_client()
-
-        # tailor instruction based on batch toggle
-        mode_instruction = (
-            "Extract all major distinct factual claims from this full article."
-            if batch_mode else
-            "Extract the primary core factual claim from this text."
-        )
-
-        user_prompt = f"{mode_instruction}\n\nINPUT TEXT:\n\"\"\"\n{raw_text.strip()}\n\"\"\""      # text to analyze, not instructions
-
-        # Execute cloud inference on Nebius Token Factory
-        response = client.chat.completions.create(
-            model=settings.NVIDIA_NANO_MODEL,
-            temperature=settings.DEFAULT_TEMPERATURE,
-            max_tokens=settings.MAX_TOKENS_EXTRACTION,
-            messages=[
-                {"role": "system", "content": EXTRACTION_SYSTEM_PROMPT},
-                {"role": "user", "content": user_prompt}
-            ]
-        )
-
-        # Extract raw text output from the model
-        raw_output = response.choices[0].message.content.strip()
-
-        # Sanitize any accidental markdown code fences (```json ... ```)
-        cleaned_json = clean_json_string(raw_output)
-
-        # Parse string into Python dictionary for looping
-        parsed_data = json.loads(cleaned_json)
-        parsed_data["success"] = True
-        parsed_data["is_mock"] = False
-        return parsed_data
+        user_prompt = _build_user_prompt(raw_text, batch_mode)
+        raw_output = _call_nano(user_prompt)
+        return _parse_extraction_response(raw_output)
 
     except Exception as e:
         # Graceful error handling: return error dictionary rather than crashing
