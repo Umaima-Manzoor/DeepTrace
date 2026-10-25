@@ -1342,33 +1342,43 @@ a:hover {
 
 /* --- 34. Content gap tightening --- */
 .content {
-  gap: 20px;
+  gap: 12px;
 }
 
 .hero {
-  padding-bottom: 0;
+  padding: 24px 0 0;
+  margin-bottom: 0;
+}
+
+.example-claims {
+  margin-top: 16px;
+  margin-bottom: 0;
 }
 
 /* --- 35. Results Header --- */
 .results-header {
-  margin-top: 8px;
-  margin-bottom: 4px;
-  padding-top: 8px;
-  border-top: 2px solid var(--border);
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-strong);
 }
 
 .results-title {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   color: var(--text-primary);
-  margin-bottom: 4px;
-  padding-top: 16px;
+  margin-bottom: 2px;
+  padding-top: 0;
 }
 
 .results-subtitle {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+#results:not(:empty) {
+  margin-top: 0;
 }
 
 /* --- 36. Bigger section headings --- */
@@ -1385,19 +1395,4 @@ a:hover {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--text-primary);
-}
-
-/* --- 38. Tighten space between hero and results --- */
-.hero {
-  padding-bottom: 0;
-  margin-bottom: 0;
-}
-
-.example-claims {
-  margin-top: 20px;
-  margin-bottom: 0;
-}
-
-#results:not(:empty) {
-  margin-top: 4px;
 }
