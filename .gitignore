@@ -55,6 +55,7 @@ desktop.ini
 temp/
 cache/
 test_keys.py
+.omc/
 
 
 # Code Runner extension temp files
