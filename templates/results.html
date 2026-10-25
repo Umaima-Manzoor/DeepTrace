@@ -1,5 +1,7 @@
-{% extends "base.html" %}
-{% block content %}
+<div class="results-header anim-fade-up">
+  <h2 class="results-title">Verification Results</h2>
+  <p class="results-subtitle">Cross-referenced analysis from multiple sources</p>
+</div>
 
 {% if reports|length > 1 %}
 <div class="batch-summary anim-fade-up" style="--delay: 0.1s">
@@ -82,9 +84,9 @@
 <!-- ANALYSIS CARD: Reasoning summary + key contradiction -->
 {% if report.reasoning_summary or report.key_contradiction %}
 <div class="claim-card analysis-card anim-fade-up" style="--delay: {{ loop.index0 * 0.15 + 0.35 }}s">
-  <h3 class="section-heading">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-    Analysis
+  <h3 class="section-heading section-heading-lg">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+    AI Analysis
   </h3>
   {% if report.reasoning_summary %}
   <div class="evidence-item anim-slide-left" style="--delay: 0.5s">{{ report.reasoning_summary }}</div>
@@ -128,5 +130,3 @@
 {% endif %}
 
 {% endfor %}
-
-{% endblock %}

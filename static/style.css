@@ -1348,3 +1348,56 @@ a:hover {
 .hero {
   padding-bottom: 0;
 }
+
+/* --- 35. Results Header --- */
+.results-header {
+  margin-top: 8px;
+  margin-bottom: 4px;
+  padding-top: 8px;
+  border-top: 2px solid var(--border);
+}
+
+.results-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  padding-top: 16px;
+}
+
+.results-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/* --- 36. Bigger section headings --- */
+.section-heading-lg {
+  font-size: 1.125rem;
+  letter-spacing: -0.01em;
+  text-transform: none;
+}
+
+/* --- 37. Bolder verdict cell labels --- */
+.cell-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-primary);
+}
+
+/* --- 38. Tighten space between hero and results --- */
+.hero {
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.example-claims {
+  margin-top: 20px;
+  margin-bottom: 0;
+}
+
+#results:not(:empty) {
+  margin-top: 4px;
+}
