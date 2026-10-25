@@ -1,45 +1,4 @@
-/* ============================================
-   DEEPTRACE — Warm Authority Palette
-   Editorial Warmth + Nordic Clean Hybrid
-   Font: DM Sans
-   ============================================ */
-
-/* ============================================
-   RESET & BASE
-   ============================================ */
-*, *::before, *::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html {
-  font-size: 16px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  max-width: 100%;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  scroll-behavior: smooth;
-}
-
-body {
-  font-family: var(--font-sans);
-  font-size: 0.9375rem;
-  color: var(--text-primary);
-  background: var(--bg-page);
-  line-height: 1.6;
-  min-height: 100dvh;       /*dynamic - excluding address bar*/
-  max-width: 100%;
-  overflow-x: hidden;
-  display: grid;
-  grid-template-columns: var(--sidebar-width) 1fr;
-  position: relative;
-}
-
-/* ============================================
-   CUSTOM PROPERTIES
-   ============================================ */
+   /* CUSTOM PROPERTIES */
 :root {
   /* Backgrounds */
   --bg-page: #f5f0e8;
@@ -103,9 +62,38 @@ body {
   --duration-normal: 300ms;
 }
 
-/* ============================================
-   BACKGROUND TEXTURE
-   ============================================ */
+   /* RESET & BASE */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-width: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  background: var(--bg-page);
+  line-height: 1.6;
+  min-height: 100dvh;       /*dynamic - excluding address bar*/
+  max-width: 100%;
+  overflow-x: hidden;
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  position: relative;
+}
+
+   /* BACKGROUND TEXTURE */
 body::before {
   content: '';
   position: fixed;
@@ -116,9 +104,7 @@ body::before {
   z-index: 0;
 }
 
-/* ============================================
-   TYPOGRAPHY
-   ============================================ */
+   /* TYPOGRAPHY */
 h1, h2, h3, h4 {
   font-weight: 700;
   letter-spacing: -0.025em;
@@ -140,9 +126,7 @@ a:hover {
   color: var(--accent-primary);
 }
 
-/* ============================================
-   LAYOUT
-   ============================================ */
+   /* LAYOUT */
 .main {
   grid-column: 2;
   max-width: calc(var(--max-content) + 64px);
@@ -163,9 +147,7 @@ a:hover {
   overflow-x: hidden;
 }
 
-/* ============================================
-   SIDEBAR
-   ============================================ */
+   /* SIDEBAR */
 .sidebar {
   background: var(--bg-sidebar);
   color: var(--text-on-dark);
@@ -262,9 +244,7 @@ a:hover {
   flex-shrink: 0;
 }
 
-/* ============================================
-   LOGO
-   ============================================ */
+   /* LOGO */
 .logo-mark {
   width: 30px;
   height: 30px;
@@ -273,9 +253,7 @@ a:hover {
   animation: logoIn 0.8s var(--ease-bounce) both;
 }
 
-/* ============================================
-   HERO SECTION
-   ============================================ */
+   /* HERO SECTION */
 .hero {
   position: relative;
   padding: 24px 0 0;
@@ -316,9 +294,7 @@ a:hover {
   margin-bottom: 28px;
 }
 
-/* ============================================
-   FORMS
-   ============================================ */
+   /* FORMS */
 .claim-form {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -403,9 +379,7 @@ a:hover {
   display: block;
 }
 
-/* ============================================
-   BUTTONS
-   ============================================ */
+   /* BUTTONS */
 .btn {
   font-family: var(--font-sans);
   font-size: 0.875rem;
@@ -450,9 +424,7 @@ a:hover {
   border-color: var(--text-muted);
 }
 
-/* ============================================
-   MODE TOGGLE
-   ============================================ */
+   /* MODE TOGGLE */
 .mode-toggle {
   display: inline-flex;
   background: var(--bg-page);
@@ -497,9 +469,7 @@ a:hover {
   transform: translateY(-8px);
 }
 
-/* ============================================
-   EXAMPLE CARDS
-   ============================================ */
+   /* EXAMPLE CARDS */
 .example-claims {
   margin-top: 20px;
   margin-bottom: 0;
@@ -543,9 +513,82 @@ a:hover {
   transform: translateY(-2px);
 }
 
-/* ============================================
-   RESULTS HEADER
-   ============================================ */
+   /* LOADING STAGES */
+#loading {
+  display: none;
+}
+
+#loading.htmx-request {
+  display: block;
+}
+
+.stages {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.stage {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  transition: all var(--duration-normal) ease;
+}
+
+.stage-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--border-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.625rem;
+  flex-shrink: 0;
+  transition: all var(--duration-normal) ease;
+}
+
+.stage-label {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  transition: color var(--duration-normal) ease;
+}
+
+.stage.active {
+  background: rgba(220, 38, 38, 0.04);
+}
+
+.stage.active .stage-icon {
+  border-color: var(--accent-primary);
+  background: var(--accent-primary);
+  animation: pulse 1.5s ease infinite;
+}
+
+.stage.active .stage-label {
+  color: var(--accent-primary);
+  font-weight: 600;
+}
+
+.stage.complete .stage-icon {
+  border-color: var(--verdict-true);
+  background: var(--verdict-true);
+  color: #ffffff;
+  animation: scaleIn 0.3s var(--ease-bounce) both;
+}
+
+.stage.complete .stage-label {
+  color: var(--text-primary);
+}
+
+   /* RESULTS HEADER */
 .results-header {
   margin-top: 20px;
   margin-bottom: 0;
@@ -571,9 +614,7 @@ a:hover {
   display: none;
 }
 
-/* ============================================
-   CLAIM CARD (base for verdict/analysis/sources)
-   ============================================ */
+   /* CLAIM CARD (base for verdict/analysis/sources) */
 .claim-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -618,9 +659,7 @@ a:hover {
   padding-bottom: 28px;
 }
 
-/* ============================================
-   VERDICT GRID (3-column centered layout)
-   ============================================ */
+   /* VERDICT GRID (3-column centered layout) */
 .verdict-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -650,9 +689,7 @@ a:hover {
   text-align: center;
 }
 
-/* ============================================
-   VERDICT BADGES
-   ============================================ */
+   /* VERDICT BADGES */
 .verdict-badge {
   display: inline-flex;
   align-items: center;
@@ -700,9 +737,7 @@ a:hover {
   flex-shrink: 0;
 }
 
-/* ============================================
-   CONFIDENCE METER
-   ============================================ */
+   /* CONFIDENCE METER */
 .confidence-value {
   font-size: 1.75rem;
   font-weight: 700;
@@ -731,9 +766,7 @@ a:hover {
   animation-delay: var(--delay, 0.5s);
 }
 
-/* ============================================
-   CLASSIFICATION BADGE
-   ============================================ */
+   /* CLASSIFICATION BADGE */
 .classification-badge {
   display: inline-flex;
   align-items: center;
@@ -747,9 +780,7 @@ a:hover {
   letter-spacing: 0.01em;
 }
 
-/* ============================================
-   METRICS ROW
-   ============================================ */
+   /* METRICS ROW */
 .metrics-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -815,9 +846,7 @@ a:hover {
   margin-top: 6px;
 }
 
-/* ============================================
-   BATCH SUMMARY
-   ============================================ */
+   /* BATCH SUMMARY */
 .batch-summary {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -865,9 +894,7 @@ a:hover {
   text-align: center;
 }
 
-/* ============================================
-   SECTION HEADINGS (used in Analysis / Sources cards)
-   ============================================ */
+   /* SECTION HEADINGS (used in Analysis / Sources cards) */
 .section-heading {
   display: flex;
   align-items: center;
@@ -891,9 +918,7 @@ a:hover {
   flex-shrink: 0;
 }
 
-/* ============================================
-   ANALYSIS CARD CONTENT
-   ============================================ */
+   /* ANALYSIS CARD CONTENT */
 .evidence-item {
   font-size: 0.9375rem;
   color: var(--text-primary);
@@ -906,9 +931,7 @@ a:hover {
   overflow-wrap: break-word;
 }
 
-/* ============================================
-   SOURCE CARDS
-   ============================================ */
+   /* SOURCE CARDS */
 .source-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -1090,86 +1113,7 @@ a:hover {
   color: var(--verdict-unverifiable);
 }
 
-/* ============================================
-   LOADING STAGES
-   ============================================ */
-#loading {
-  display: none;
-}
-
-#loading.htmx-request {
-  display: block;
-}
-
-.stages {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 24px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-}
-
-.stage {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-  transition: all var(--duration-normal) ease;
-}
-
-.stage-icon {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid var(--border-strong);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.625rem;
-  flex-shrink: 0;
-  transition: all var(--duration-normal) ease;
-}
-
-.stage-label {
-  font-size: 0.875rem;
-  color: var(--text-muted);
-  font-weight: 500;
-  transition: color var(--duration-normal) ease;
-}
-
-.stage.active {
-  background: rgba(220, 38, 38, 0.04);
-}
-
-.stage.active .stage-icon {
-  border-color: var(--accent-primary);
-  background: var(--accent-primary);
-  animation: pulse 1.5s ease infinite;
-}
-
-.stage.active .stage-label {
-  color: var(--accent-primary);
-  font-weight: 600;
-}
-
-.stage.complete .stage-icon {
-  border-color: var(--verdict-true);
-  background: var(--verdict-true);
-  color: #ffffff;
-  animation: scaleIn 0.3s var(--ease-bounce) both;
-}
-
-.stage.complete .stage-label {
-  color: var(--text-primary);
-}
-
-/* ============================================
-   FOOTER
-   ============================================ */
+   /* FOOTER */
 .footer {
   margin-top: 40px;
   padding-top: 20px;
@@ -1179,9 +1123,7 @@ a:hover {
   text-align: center;
 }
 
-/* ============================================
-   KEYFRAMES
-   ============================================ */
+   /* KEYFRAMES */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
@@ -1223,9 +1165,7 @@ a:hover {
   to { opacity: 1; transform: scale(1) rotate(0deg); }
 }
 
-/* ============================================
-   ANIMATION UTILITIES
-   ============================================ */
+   /* ANIMATION UTILITIES */
 .anim-fade-up {
   animation: fadeUp 0.6s var(--ease-out) both;
   animation-delay: var(--delay, 0s);
@@ -1246,9 +1186,7 @@ a:hover {
   animation-delay: var(--delay, 0.3s);
 }
 
-/* ============================================
-   MOBILE HAMBURGER MENU
-   ============================================ */
+   /* MOBILE HAMBURGER MENU */
 .hamburger {
   display: none;
   position: fixed;
@@ -1284,9 +1222,7 @@ a:hover {
   z-index: 90;
 }
 
-/* ============================================
-   RESPONSIVE
-   ============================================ */
+   /* RESPONSIVE */
 @media (max-width: 768px) {
   body {
     grid-template-columns: 1fr;
@@ -1346,9 +1282,7 @@ a:hover {
   }
 }
 
-/* ============================================
-   REDUCED MOTION
-   ============================================ */
+   /* REDUCED MOTION */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
