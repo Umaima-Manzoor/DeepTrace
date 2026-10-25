@@ -17,7 +17,7 @@ else:
     load_dotenv()       # Load from system environment if .env file is not found (e.g., in production)
 
 
-class Settings:     #Central configuration store for DeepTrace verification pipeline
+class Settings:     # Central configuration store for DeepTrace verification pipeline
 
     # Runtime environment
     APP_ENV: str = os.getenv("APP_ENV", "development").strip()      # fallback if not found

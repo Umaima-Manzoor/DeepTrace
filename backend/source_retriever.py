@@ -1,6 +1,6 @@
 """
 backend/source_retriever.py — Stage 2: Live Multi-Source Retrieval
-Queries Search API AI Search API for live grounding evidence and assigns
+Queries the configured search API for live grounding evidence and assigns
 domain credibility tiers (Tier 1 to Tier 4) to each retrieved source.
 """
 
@@ -37,6 +37,10 @@ TIER_3_DOMAINS = {
     "en.wikipedia.org", "simple.wikipedia.org",
     "sciencefocus.com", "skyatnightmagazine.com", "planetary.org"
 }
+
+# Helper to build a consistent tier classification dict
+def _tier_result(tier: int, label: str, badge_class: str, domain: str) -> dict:
+    return {"tier": tier, "label": label, "badge_class": badge_class, "domain": domain}
 
 
 # Strips markdown formatting, file references, and navigation noise from Search API snippets.
@@ -79,7 +83,6 @@ def get_search_client() -> TavilyClient | None:
 
 
 # takes a full URL, extracts its root domain, and classifies its credibility tier.
-# dict: {"tier": int, "label": str, "badge_class": str, "domain": str}
 def classify_domain_tier(url: str) -> dict:
     try:
         parsed_url = urlparse(url)      # Extract domain (e.g., 'www.nasa.gov') and strip 'www.' and make it lowercase
@@ -89,55 +92,25 @@ def classify_domain_tier(url: str) -> dict:
 
         # Rule 1: Any official government or academic top-level domain
         if domain.endswith(".gov") or domain.endswith(".edu") or domain.endswith(".mil"):
-            return {
-                "tier": 1,
-                "label": "TIER 1 — Official / Gov / Edu",
-                "badge_class": "tier-1",
-                "domain": domain
-            }
+            return _tier_result(1, "TIER 1 — Official / Gov / Edu", "tier-1", domain)
 
         # Rule 2: Explicit Tier 1 scientific/official domain matches
         if any(domain == d or domain.endswith("." + d) for d in TIER_1_DOMAINS):
-            return {
-                "tier": 1,
-                "label": "TIER 1 — Official / Academic",
-                "badge_class": "tier-1",
-                "domain": domain
-            }
+            return _tier_result(1, "TIER 1 — Official / Academic", "tier-1", domain)
 
         # Rule 3: Tier 2 Wire Services
         if any(domain == d or domain.endswith("." + d) for d in TIER_2_DOMAINS):
-            return {
-                "tier": 2,
-                "label": "TIER 2 — Wire Service",
-                "badge_class": "tier-2",
-                "domain": domain
-            }
+            return _tier_result(2, "TIER 2 — Wire Service", "tier-2", domain)
 
         # Rule 4: Tier 3 Established Media
         if any(domain == d or domain.endswith("." + d) for d in TIER_3_DOMAINS):
-            return {
-                "tier": 3,
-                "label": "TIER 3 — Established Media",
-                "badge_class": "tier-3",
-                "domain": domain
-            }
+            return _tier_result(3, "TIER 3 — Established Media", "tier-3", domain)
 
         # Rule 5: Fallback — Tier 4 General Web / Blog
-        return {
-            "tier": 4,
-            "label": "TIER 4 — General Web / Blog",
-            "badge_class": "tier-4",
-            "domain": domain
-        }
+        return _tier_result(4, "TIER 4 — General Web / Blog", "tier-4", domain)
 
     except Exception:
-        return {
-            "tier": 4,
-            "label": "TIER 4 — Unverified Domain",
-            "badge_class": "tier-4",
-            "domain": "unknown"
-        }
+        return _tier_result(4, "TIER 4 — Unverified Domain", "tier-4", "unknown")
 
 
 # performs the live web search and returns the raw results list
@@ -162,20 +135,20 @@ def _search_web(query: str, limit: int) -> list:
 def _process_results(raw_results: list) -> list:
     structured_sources = []
 
-    for index, item in enumerate(raw_results, start=1):     # source IDs start at 1 for display purposes
+    for index, item in enumerate(raw_results, start=1):  # source IDs start at 1 for display
         url = item.get("url", "")
         tier_info = classify_domain_tier(url)
 
         raw_content = item.get("content", "").strip()
-        clean_content = _clean_snippet(raw_content)         # strip markdown noise first
-        short_content = _truncate_snippet(clean_content)     # then truncate to ~200 words
+        clean_content = _clean_snippet(raw_content)  # strip markdown noise first
+        short_content = _truncate_snippet(clean_content)  # then truncate to ~200 words
 
         source_entry = {
             "source_id": index,
             "title": item.get("title", "Untitled Source"),
             "url": url,
             "snippet": short_content,
-            "score": round(item.get("score", 0.0), 3),      # 3 dp
+            "score": round(item.get("score", 0.0), 3),
             "domain": tier_info["domain"],
             "tier": tier_info["tier"],
             "tier_label": tier_info["label"],
@@ -183,13 +156,11 @@ def _process_results(raw_results: list) -> list:
         }
         structured_sources.append(source_entry)
 
-    # Sort sources: highest credibility first (Tier 1 -> Tier 4), then by Search API relevance score
-    structured_sources.sort(key=lambda x: (x["tier"], -x["score"]))     # ascending tier (1 is best), descending score
+    structured_sources.sort(key=lambda x: (x["tier"], -x["score"]))  # highest credibility first, then relevance
     return structured_sources
 
 
-# Queries the configured search AI Search API for live grounding evidence across the web.
-# dict: {"success": bool, "query": str, "total_found": int, "sources": list}
+# Queries the configured Search API for live grounding evidence across the web.
 def retrieve_sources(query: str, max_results: int | None = None) -> dict:
     if not query or not query.strip():
         return {
@@ -200,13 +171,12 @@ def retrieve_sources(query: str, max_results: int | None = None) -> dict:
             "sources": []
         }
 
-    limit = max_results or settings.MAX_SEARCH_RESULTS      # reducing sources per claim in batch mode
+    limit = max_results or settings.MAX_SEARCH_RESULTS
 
     try:
         raw_results = _search_web(query, limit)
 
-        # If Search API key is missing, use offline mock simulator
-        if raw_results is None:
+        if raw_results is None:  # search API key is missing, use offline mock
             return _simulate_sources_fallback(query, limit)
 
         structured_sources = _process_results(raw_results)

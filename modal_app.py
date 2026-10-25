@@ -12,8 +12,7 @@ image = (modal.Image.debian_slim(python_version="3.11")
     .add_local_dir("config", "/root/config")  )
 
 
-
-@app.function(          # The actual function that serves your FastAPI app
+@app.function(          # The actual function that serves the FastAPI app on a public Modal URL
     image=image, secrets=[modal.Secret.from_name("deeptrace-secrets")]     # injecting the API keys as real environment variables
 )
 @modal.asgi_app()       # ASGI is the protocol FastAPI used - modal creates a public URL and routes all requests to the FastAPI app

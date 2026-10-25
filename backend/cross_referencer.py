@@ -1,7 +1,6 @@
 """ Stage 3: Deep Logical Cross-Referencing
-Uses LLM API to analyze live
-web evidence from Web Search API, detect contradictions, categorize misinformation type,
-and synthesize a grounded factual verdict.
+Uses LLM API to analyze live web evidence, detect contradictions,
+categorize misinformation type, and synthesize a grounded factual verdict.
 """
 
 import json             # LLM API returns raw JSON - need to convert to Python dict
@@ -128,11 +127,9 @@ def cross_reference_claim(claim: dict, sources_data: dict) -> dict:
             "confidence_score": 0
         }
 
-    # Check if a live Nebius API key is configured
     key_status = settings.validate_keys()
     if not key_status["llm"]:
-        # Seamless fallback simulation while Nebius account review is pending
-        return _simulate_cross_reference_fallback(claim_text, sources)
+        return _simulate_cross_reference_fallback(claim_text, sources)  # fallback when LLM key is missing
 
     try:
         user_content = _build_cross_reference_prompt(claim_text, sources)
@@ -156,10 +153,9 @@ def cross_reference_claim(claim: dict, sources_data: dict) -> dict:
         }
 
 
-# generates fake but realistic verdict data when running without a live Nebius key
+# generates fake but realistic verdict data when running without a live LLM key
 def _simulate_cross_reference_fallback(claim_text: str, sources: list) -> dict:
 
-    # Context-aware mock: if 'alien' or 'conspiracy' in text, simulate a debunked verdict
     lower_claim = claim_text.lower()
     is_debunked = any(w in lower_claim for w in ["alien", "spacecraft", "antarctic", "secret", "leak", "coverup"])
 
@@ -200,7 +196,6 @@ def _simulate_cross_reference_fallback(claim_text: str, sources: list) -> dict:
             ]
         }
 
-    # Default verified mock for standard factual queries
     return {
         "success": True,
         "is_mock": True,

@@ -1,30 +1,27 @@
-# uses LLM API to decompose raw, unstructured user text into structured, verifiable atomic claims.
+# Uses LLM API to decompose raw, unstructured user text into structured, verifiable atomic claims.
 
 import json                 # LLM API outputs in raw JSON format, which we parse into Python dictionaries.
 from pathlib import Path    # reads prompt text from external file instead of hardcoding in Python
 from config.settings import settings
 from backend.utils import clean_json_string, get_llm_client  # shared utilities
 
-# system prompt for LLM API — loaded from external text file so it can be edited without touching Python code
+# System prompt for LLM - loaded from external text file so it can be edited without touching Python code
 EXTRACTION_SYSTEM_PROMPT = (Path(__file__).parent / "prompts" / "extraction.txt").read_text(encoding="utf-8")
 
-
-# builds the user-facing instruction based on whether batch mode is on or off
+# Builds the user-facing instruction based on whether batch mode is on or off
 def _build_user_prompt(raw_text: str, batch_mode: bool) -> str:
-    # tailor instruction based on batch toggle
     mode_instruction = (
         "Extract all major distinct factual claims from this full article."
         if batch_mode else
         "Extract the primary core factual claim from this text."
     )
-    return f"{mode_instruction}\n\nINPUT TEXT:\n\"\"\"\n{raw_text.strip()}\n\"\"\""      # text to analyze, not instructions
+    return f"{mode_instruction}\n\nINPUT TEXT:\n\"\"\"\n{raw_text.strip()}\n\"\"\""
 
 
-# sends the prompt to the fast model and returns the raw text response
+# Sends the prompt to the fast model and returns the raw text response
 def _call_fast_model(user_prompt: str) -> str:
     client = get_llm_client()
 
-    # Execute cloud inference via configured LLM provider
     response = client.chat.completions.create(
         model=settings.FAST_MODEL,
         temperature=settings.DEFAULT_TEMPERATURE,
@@ -35,26 +32,23 @@ def _call_fast_model(user_prompt: str) -> str:
         ]
     )
 
-    # Extract raw text output from the model
     return response.choices[0].message.content.strip()
 
 
-# parses the raw LLM output string into a Python dictionary
+# Parses the raw LLM output string into a Python dictionary
 def _parse_extraction_response(raw_output: str) -> dict:
-    # Sanitize any accidental markdown code fences (```json ... ```)
-    cleaned_json = clean_json_string(raw_output)
+    cleaned_json = clean_json_string(raw_output)  # strip accidental markdown code fences
 
-    # Parse string into Python dictionary for looping
     parsed_data = json.loads(cleaned_json)
     parsed_data["success"] = True
     parsed_data["is_mock"] = False
     return parsed_data
 
 
-# core extraction pipeline
+# Core extraction pipeline
 def extract_claims(raw_text: str, batch_mode: bool = False) -> dict:
     # raw_text: user's pasted claim or article
-    # batch_mode: whether to extract multiple claims from a full article (True) or just the primary claim (False)
+    # batch_mode: extract multiple claims (True) or just the primary claim (False)
     # returns: dictionary with parsed claims, search queries, and status
 
     if not raw_text or not raw_text.strip():
@@ -65,9 +59,8 @@ def extract_claims(raw_text: str, batch_mode: bool = False) -> dict:
             "claims": []
         }
 
-    # Check if a live LLM API key is configured
     key_status = settings.validate_keys()
-    if not key_status["llm"]:        # simulation in case of missing or invalid LLM API key
+    if not key_status["llm"]:  # simulation fallback when LLM API key is missing or invalid
         return _simulate_extraction_fallback(raw_text, batch_mode)
 
     try:
@@ -76,7 +69,6 @@ def extract_claims(raw_text: str, batch_mode: bool = False) -> dict:
         return _parse_extraction_response(raw_output)
 
     except Exception as e:
-        # Graceful error handling: return error dictionary rather than crashing
         return {
             "success": False,
             "error": f"LLM inference error: {str(e)}",
@@ -85,7 +77,7 @@ def extract_claims(raw_text: str, batch_mode: bool = False) -> dict:
         }
 
 
-# offline simulator: Generates realistic mock extracted claims when working offline or when LLM API key is not working
+# Offline simulator: generates realistic mock extracted claims when LLM API key is not available
 def _simulate_extraction_fallback(raw_text: str, batch_mode: bool) -> dict:
     clean_snippet = raw_text.strip()[:100]
     if batch_mode:

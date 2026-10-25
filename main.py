@@ -18,6 +18,28 @@ app = FastAPI(title="DeepTrace", version="1.0.0")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")          # where to look for the template files
 
+# Returns a minimal UNVERIFIABLE report when a single claim fails mid-pipeline
+def _failed_claim_report(claim_text: str, error: str) -> dict:
+    return {
+        "success": False,
+        "is_mock": False,
+        "claim_text": claim_text,
+        "verdict": "UNVERIFIABLE",
+        "verdict_badge_class": "verdict-unverifiable",
+        "confidence_score": 0,
+        "misinfo_type": "Unclassified",
+        "reasoning_summary": f"Analysis failed for this claim: {error}",
+        "key_contradiction": None,
+        "metrics": {
+            "total_sources": 0, "supports_count": 0, "contradicts_count": 0,
+            "origin_count": 0, "neutral_count": 0,
+            "tier_1_count": 0, "tier_2_count": 0, "tier_3_count": 0, "tier_4_count": 0,
+            "high_trust_ratio": "0%"
+        },
+        "sources": [],
+        "export_markdown": ""
+    }
+
 @app.get("/", response_class=HTMLResponse)      # run this function when a GET request is sent and this route returns HTML
 async def home(request: Request):   #Async: can handle multiple requests simultaneously - renders the home page with the claim input form - Request: HTTP object
     return templates.TemplateResponse(request, "index.html")
@@ -59,32 +81,7 @@ async def verify(request: Request, claim_text: str = Form(...), batch_mode: str 
                 report = generate_verification_report(claim, sources_data, verdict_data)
                 reports.append(report)
             except Exception as e:
-                # Per-claim error handling: one failed claim doesn't kill the entire batch
-                reports.append({
-                    "success": False,
-                    "is_mock": False,
-                    "claim_text": claim.get("claim_text", "Unknown claim"),
-                    "verdict": "UNVERIFIABLE",
-                    "verdict_badge_class": "verdict-unverifiable",
-                    "confidence_score": 0,
-                    "misinfo_type": "Unclassified",
-                    "reasoning_summary": f"Analysis failed for this claim: {str(e)}",
-                    "key_contradiction": None,
-                    "metrics": {
-                        "total_sources": 0,
-                        "supports_count": 0,
-                        "contradicts_count": 0,
-                        "origin_count": 0,
-                        "neutral_count": 0,
-                        "tier_1_count": 0,
-                        "tier_2_count": 0,
-                        "tier_3_count": 0,
-                        "tier_4_count": 0,
-                        "high_trust_ratio": "0%"
-                    },
-                    "sources": [],
-                    "export_markdown": ""
-                })
+                reports.append(_failed_claim_report(claim.get("claim_text", "Unknown claim"), str(e)))
 
         # Combine all markdown reports into a single downloadable document
         combined_markdown = "\n\n---\n\n".join(
