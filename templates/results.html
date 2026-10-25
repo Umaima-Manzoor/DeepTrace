@@ -10,13 +10,23 @@
   </div>
   {% set verified_count = reports|selectattr('verdict', 'equalto', 'VERIFIED')|list|length %}
   {% set debunked_count = reports|selectattr('verdict', 'equalto', 'DEBUNKED')|list|length %}
+  {% set disputed_count = reports|selectattr('verdict', 'equalto', 'DISPUTED')|list|length %}
+  {% set unverifiable_count = reports|selectattr('verdict', 'equalto', 'UNVERIFIABLE')|list|length %}
   <div class="summary-stat">
     <span class="stat-value" style="color: var(--verdict-true)">{{ verified_count }}</span>
     <span class="stat-label">Verified</span>
   </div>
   <div class="summary-stat">
+    <span class="stat-value" style="color: var(--verdict-disputed)">{{ disputed_count }}</span>
+    <span class="stat-label">Disputed</span>
+  </div>
+  <div class="summary-stat">
     <span class="stat-value" style="color: var(--verdict-false)">{{ debunked_count }}</span>
     <span class="stat-label">Debunked</span>
+  </div>
+  <div class="summary-stat">
+    <span class="stat-value" style="color: var(--verdict-unverifiable)">{{ unverifiable_count }}</span>
+    <span class="stat-label">Unverifiable</span>
   </div>
 </div>
 {% endif %}

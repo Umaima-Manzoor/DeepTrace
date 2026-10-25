@@ -29,7 +29,7 @@ body {
   color: var(--text-primary);
   background: var(--bg-page);
   line-height: 1.6;
-  min-height: 100vh;
+  min-height: 100dvh;       /*dynamic - excluding address bar*/
   max-width: 100%;
   overflow-x: hidden;
   display: grid;
@@ -752,7 +752,7 @@ a:hover {
    ============================================ */
 .metrics-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
   margin-top: 20px;
 }
@@ -824,7 +824,7 @@ a:hover {
   border-radius: var(--radius-lg);
   padding: 24px 28px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 16px;
   box-shadow: var(--shadow-sm);
 }
@@ -1326,7 +1326,7 @@ a:hover {
   }
 
   .batch-summary {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, 1fr);
   }
 
   .summary-stat {
