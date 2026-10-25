@@ -1,10 +1,10 @@
 """
 backend/source_retriever.py — Stage 2: Live Multi-Source Retrieval
-Queries Tavily AI Search API for live grounding evidence and assigns
+Queries Search API AI Search API for live grounding evidence and assigns
 domain credibility tiers (Tier 1 to Tier 4) to each retrieved source.
 """
 
-import re               # regex for stripping markdown noise from Tavily snippets
+import re               # regex for stripping markdown noise from Search API snippets
 from urllib.parse import urlparse       # root domain and subdomain extraction
 from tavily import TavilyClient
 from config.settings import settings
@@ -39,8 +39,8 @@ TIER_3_DOMAINS = {
 }
 
 
-# Strips markdown formatting, file references, and navigation noise from Tavily snippets.
-# Tavily's advanced search sometimes pulls entire page structures including download
+# Strips markdown formatting, file references, and navigation noise from Search API snippets.
+# Search API's advanced search sometimes pulls entire page structures including download
 # links, image captions, and social media buttons — none of which are useful evidence.
 def _clean_snippet(text: str) -> str:
     if not text:
@@ -56,7 +56,7 @@ def _clean_snippet(text: str) -> str:
 
 
 # Truncates a text snippet to a maximum word count, preserving sentence boundaries.
-# Prevents LLM context overflow when Tavily returns full-page content dumps.
+# Prevents LLM context overflow when Search API returns full-page content dumps.
 def _truncate_snippet(text: str, max_words: int = 200) -> str:
     if not text:
         return ""
@@ -75,6 +75,7 @@ def get_search_client() -> TavilyClient | None:
     if not settings.SEARCH_API_KEY or settings.SEARCH_API_KEY.startswith("your_"):
         return None
     return TavilyClient(api_key=settings.SEARCH_API_KEY)
+
 
 
 # takes a full URL, extracts its root domain, and classifies its credibility tier.
@@ -150,14 +151,14 @@ def _search_web(query: str, limit: int) -> list:
         query=query.strip(),
         search_depth="advanced",         # search_depth=advanced extracts clean paragraph content from each page, filters out ads, navigation menus, cookie banners, and other noise.
         max_results=limit,
-        include_answer=False,            # don't want Tavily's opinion
+        include_answer=False,            # don't want Search API's opinion
         include_raw_content=False        # don't want full page HTML, just clean text snippets
     )
 
     return search_response.get("results", [])    # extracting results list from search API's JSON response - empty list if no results found
 
 
-# processes raw Tavily results: cleans snippets, truncates, classifies tiers, assigns IDs
+# processes raw Search API results: cleans snippets, truncates, classifies tiers, assigns IDs
 def _process_results(raw_results: list) -> list:
     structured_sources = []
 
@@ -182,7 +183,7 @@ def _process_results(raw_results: list) -> list:
         }
         structured_sources.append(source_entry)
 
-    # Sort sources: highest credibility first (Tier 1 -> Tier 4), then by Tavily relevance score
+    # Sort sources: highest credibility first (Tier 1 -> Tier 4), then by Search API relevance score
     structured_sources.sort(key=lambda x: (x["tier"], -x["score"]))     # ascending tier (1 is best), descending score
     return structured_sources
 
@@ -204,7 +205,7 @@ def retrieve_sources(query: str, max_results: int | None = None) -> dict:
     try:
         raw_results = _search_web(query, limit)
 
-        # If Tavily key is missing, use offline mock simulator
+        # If Search API key is missing, use offline mock simulator
         if raw_results is None:
             return _simulate_sources_fallback(query, limit)
 

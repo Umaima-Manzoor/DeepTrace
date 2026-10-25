@@ -3,7 +3,7 @@ main.py - DeepTrace FastAPI Application
 Serves the web interface and connects the 4-stage verification pipeline to the HTML frontend via htmx.
 """
 
-from fastapi import FastAPI, Request, Form          # FastAPI: creates web application      Request: object containing all info about the incomming HTTP requestion - need to pass into Jinja2 to generate correct URLs     Form: extracts the form fields by name
+from fastapi import FastAPI, Request, Form          # FastAPI: creates web application      Request: object containing all info about the incoming HTTP request - need to pass into Jinja2 to generate correct URLs     Form: extracts the form fields by name
 from fastapi.responses import HTMLResponse, PlainTextResponse       
 from fastapi.staticfiles import StaticFiles         # for safely loading style.css fron /static - otherwise would get an error on loading
 from fastapi.templating import Jinja2Templates      # lets us render HTML files with python variables
@@ -24,7 +24,7 @@ async def home(request: Request):   #Async: can handle multiple requests simulta
 
 
 @app.post("/verify", response_class=HTMLResponse)       # handles POST requests to /verify
-async def verify(request: Request, claim_text: str = Form(...), batch_mode: str = Form(None) ):        #claim_text is required or else an error     bactch_mode None means optional        Runs the full 4-stage verification pipeline and returns results HTML
+async def verify(request: Request, claim_text: str = Form(...), batch_mode: str = Form(None) ):        #claim_text is required or else an error     batch_mode None means optional        Runs the full 4-stage verification pipeline and returns results HTML
 
     if not claim_text or not claim_text.strip():
         return templates.TemplateResponse(
@@ -113,8 +113,7 @@ async def download(request: Request, report_markdown: str = Form(...)):         
 
 
 @app.get("/health")
-async def health():
-    """Health check endpoint for deployment monitoring."""
+async def health():     # Health check endpoint for deployment monitoring
     key_status = settings.validate_keys()
     return {
         "status": "ok",

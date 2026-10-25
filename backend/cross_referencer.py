@@ -1,17 +1,17 @@
 """ Stage 3: Deep Logical Cross-Referencing
-Uses NVIDIA Nemotron 3 Ultra (via Nebius Token Factory) to analyze live
-web evidence from Tavily, detect contradictions, categorize misinformation type,
+Uses LLM API to analyze live
+web evidence from Web Search API, detect contradictions, categorize misinformation type,
 and synthesize a grounded factual verdict.
 """
 
-import json             # Ultra returns raw JSON - need to convert to Python dict
+import json             # LLM API returns raw JSON - need to convert to Python dict
 import re               # regex fallback for extracting JSON from noisy LLM output
 from pathlib import Path    # NEW: reads prompt text from external file instead of hardcoding in Python
 from config.settings import settings
 from backend.utils import get_llm_client, clean_json_string      # shared utilities
 
 
-# system prompt for Nemotron 3 Ultra - instructs the model to act as an investigative cross-examiner
+# system prompt for LLM API - instructs the model to act as an investigative cross-examiner
 # loaded from external text file so it can be edited without touching Python code
 CROSS_REFERENCE_SYSTEM_PROMPT = (Path(__file__).parent / "prompts" / "cross_reference.txt").read_text(encoding="utf-8")
 
@@ -82,7 +82,7 @@ def _format_evidence_dossier(sources: list) -> str:
 
 # builds the full user prompt by combining the claim text with formatted source evidence
 def _build_cross_reference_prompt(claim_text: str, sources: list) -> str:
-    evidence_text = _format_evidence_dossier(sources)       # formats sources into numbered list for LLM prompt (for Nemotron 3 Ultra)
+    evidence_text = _format_evidence_dossier(sources)       # formats sources into numbered list for LLM prompt 
 
     return f"""CLAIM TO VERIFY:
 \"\"\"{claim_text}\"\"\"

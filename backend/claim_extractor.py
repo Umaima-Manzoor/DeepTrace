@@ -1,11 +1,11 @@
-# uses NVIDIA Nemotron Nano (via Nebius Token Factory) to decompose raw, unstructured user text into structured, verifiable atomic claims.
+# uses LLM API to decompose raw, unstructured user text into structured, verifiable atomic claims.
 
-import json                 # Nemotron outputs in raw JSON format, which we parse into Python dictionaries.
+import json                 # LLM API outputs in raw JSON format, which we parse into Python dictionaries.
 from pathlib import Path    # reads prompt text from external file instead of hardcoding in Python
 from config.settings import settings
 from backend.utils import clean_json_string, get_llm_client  # shared utilities
 
-# system prompt for Nemotron Nano — loaded from external text file so it can be edited without touching Python code
+# system prompt for LLM API — loaded from external text file so it can be edited without touching Python code
 EXTRACTION_SYSTEM_PROMPT = (Path(__file__).parent / "prompts" / "extraction.txt").read_text(encoding="utf-8")
 
 
@@ -65,7 +65,7 @@ def extract_claims(raw_text: str, batch_mode: bool = False) -> dict:
             "claims": []
         }
 
-    # Check if a live Nebius API key is configured
+    # Check if a live LLM API key is configured
     key_status = settings.validate_keys()
     if not key_status["llm"]:        # simulation in case of missing or invalid LLM API key
         return _simulate_extraction_fallback(raw_text, batch_mode)
@@ -85,7 +85,7 @@ def extract_claims(raw_text: str, batch_mode: bool = False) -> dict:
         }
 
 
-# offline simulator: Generates realistic mock extracted claims when working offline or while Nebius account review is pending.  
+# offline simulator: Generates realistic mock extracted claims when working offline or when LLM API key is not working
 def _simulate_extraction_fallback(raw_text: str, batch_mode: bool) -> dict:
     clean_snippet = raw_text.strip()[:100]
     if batch_mode:

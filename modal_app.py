@@ -2,8 +2,7 @@ import modal
 
 app = modal.App("deeptrace")        # Create the Modal app (this is Modal's app, not FastAPI's app - different thing)
 
-# Define the container image — starts with a slim Debian Linux,
-# then installs everything from your requirements.txt
+# Define the container image — starts with a slim Debian Linux, then installs everything from your requirements.txt
 image = (modal.Image.debian_slim(python_version="3.11")
     .pip_install_from_requirements("requirements.txt")
     .add_local_file("main.py", "/root/main.py")
