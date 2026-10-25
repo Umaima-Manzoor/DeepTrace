@@ -1723,3 +1723,100 @@ body {
   margin-bottom: 8px;
   border: 1px solid rgba(8, 145, 178, 0.2);
 }
+
+/* --- 55. Final tuning --- */
+
+/* Fix 1: Remove phantom vertical scrollbar */
+html {
+  overflow-y: auto;
+}
+
+body {
+  min-height: 0;
+}
+
+/* Fix 2: Restore tier pill styling (section 50 broke flex alignment) */
+.source-tier {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.tier-1 {
+  background: var(--verdict-true-bg);
+  color: var(--verdict-true);
+  border: 1px solid var(--verdict-true-border);
+}
+
+.tier-2 {
+  background: var(--accent-secondary-light);
+  color: var(--accent-secondary);
+  border: 1px solid rgba(8, 145, 178, 0.2);
+}
+
+.tier-3 {
+  background: var(--verdict-disputed-bg);
+  color: var(--verdict-disputed);
+  border: 1px solid var(--verdict-disputed-border);
+}
+
+.tier-4 {
+  background: var(--verdict-unverifiable-bg);
+  color: var(--verdict-unverifiable);
+  border: 1px solid var(--verdict-unverifiable-border);
+}
+
+.source-domain-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-page);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.02em;
+  border: 1px solid var(--border);
+  line-height: 1.4;
+}
+
+/* Fix 3: Force verdict grid to always be 3 columns and center items */
+.verdict-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+  padding: 20px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.verdict-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* Mobile: stack vertically but keep centered */
+@media (max-width: 640px) {
+  .verdict-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Fix 4: Narrower sidebar */
+:root {
+  --sidebar-width: 210px;
+}
