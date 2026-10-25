@@ -4,7 +4,9 @@
    Font: DM Sans
    ============================================ */
 
-/* --- 1. Reset & Base --- */
+/* ============================================
+   RESET & BASE
+   ============================================ */
 *, *::before, *::after {
   margin: 0;
   padding: 0;
@@ -13,44 +15,54 @@
 
 html {
   font-size: 16px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-width: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
 }
 
 body {
-  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.9375rem;
   color: var(--text-primary);
   background: var(--bg-page);
   line-height: 1.6;
   min-height: 100vh;
+  max-width: 100%;
+  overflow-x: hidden;
   display: grid;
   grid-template-columns: var(--sidebar-width) 1fr;
   position: relative;
 }
 
-/* --- 2. Custom Properties --- */
+/* ============================================
+   CUSTOM PROPERTIES
+   ============================================ */
 :root {
+  /* Backgrounds */
   --bg-page: #f5f0e8;
   --bg-card: #ffffff;
   --bg-sidebar: #18181b;
   --bg-sidebar-hover: #27272a;
-  --bg-sidebar-active: #3f3f46;
 
+  /* Text */
   --text-primary: #18181b;
   --text-secondary: #52525b;
   --text-muted: #a1a1aa;
   --text-on-dark: #f4f4f5;
   --text-on-dark-muted: #a1a1aa;
 
+  /* Accents */
   --accent-primary: #dc2626;
   --accent-primary-hover: #b91c1c;
   --accent-secondary: #0891b2;
   --accent-secondary-light: #ecfeff;
+  --accent-secondary-border: rgba(8, 145, 178, 0.2);
   --accent-gold: #d97706;
-  --accent-gold-light: #fffbeb;
 
+  /* Verdict colors */
   --verdict-true: #16a34a;
   --verdict-true-bg: #dcfce7;
   --verdict-true-border: #86efac;
@@ -64,31 +76,36 @@ body {
   --verdict-unverifiable-bg: #f3f4f6;
   --verdict-unverifiable-border: #d1d5db;
 
+  /* Borders & shadows */
   --border: rgba(0, 0, 0, 0.07);
   --border-strong: rgba(0, 0, 0, 0.14);
-
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.08);
-  --shadow-hover: 0 12px 36px rgba(0, 0, 0, 0.12);
 
+  /* Typography */
   --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
-  --sidebar-width: 260px;
+
+  /* Layout */
+  --sidebar-width: 210px;
   --max-content: 800px;
 
+  /* Radius */
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
   --radius-full: 9999px;
 
+  /* Motion */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
   --duration-fast: 150ms;
   --duration-normal: 300ms;
-  --duration-slow: 500ms;
 }
 
-/* --- 3. Background Texture --- */
+/* ============================================
+   BACKGROUND TEXTURE
+   ============================================ */
 body::before {
   content: '';
   position: fixed;
@@ -99,7 +116,9 @@ body::before {
   z-index: 0;
 }
 
-/* --- 4. Typography --- */
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
 h1, h2, h3, h4 {
   font-weight: 700;
   letter-spacing: -0.025em;
@@ -121,24 +140,32 @@ a:hover {
   color: var(--accent-primary);
 }
 
-/* --- 5. Layout --- */
+/* ============================================
+   LAYOUT
+   ============================================ */
 .main {
   grid-column: 2;
   max-width: calc(var(--max-content) + 64px);
   margin: 0 auto;
   width: 100%;
+  min-width: 0;
   padding: 32px;
   position: relative;
   z-index: 1;
+  overflow-x: hidden;
 }
 
 .content {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
+  min-width: 0;
+  overflow-x: hidden;
 }
 
-/* --- 6. Sidebar --- */
+/* ============================================
+   SIDEBAR
+   ============================================ */
 .sidebar {
   background: var(--bg-sidebar);
   color: var(--text-on-dark);
@@ -188,13 +215,18 @@ a:hover {
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 24px;
 }
 
 .sidebar-section {
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.sidebar-section + .sidebar-section {
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .sidebar-label {
@@ -230,11 +262,9 @@ a:hover {
   flex-shrink: 0;
 }
 
-.sidebar-item .dot.gold {
-  background: var(--accent-gold);
-}
-
-/* --- 7. Logo --- */
+/* ============================================
+   LOGO
+   ============================================ */
 .logo-mark {
   width: 30px;
   height: 30px;
@@ -243,25 +273,13 @@ a:hover {
   animation: logoIn 0.8s var(--ease-bounce) both;
 }
 
-/* --- 8. Topbar --- */
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
-.topbar-title {
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: var(--text-muted);
-  letter-spacing: 0.02em;
-}
-
-/* --- 9. Hero Section --- */
+/* ============================================
+   HERO SECTION
+   ============================================ */
 .hero {
   position: relative;
-  padding: 40px 0 20px;
+  padding: 24px 0 0;
+  margin-bottom: 0;
 }
 
 .hero::before {
@@ -298,7 +316,9 @@ a:hover {
   margin-bottom: 28px;
 }
 
-/* --- 10. Forms --- */
+/* ============================================
+   FORMS
+   ============================================ */
 .claim-form {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -328,9 +348,9 @@ a:hover {
   letter-spacing: -0.01em;
 }
 
-.form-input,
 .form-textarea {
   width: 100%;
+  min-height: 100px;
   font-family: var(--font-sans);
   font-size: 0.9375rem;
   color: var(--text-primary);
@@ -338,21 +358,19 @@ a:hover {
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
   padding: 12px 14px;
-  transition: all var(--duration-fast) ease;
   outline: none;
+  resize: vertical;
+  line-height: 1.5;
+  transition: min-height var(--duration-normal) var(--ease-out),
+              border-color var(--duration-fast) ease,
+              box-shadow var(--duration-fast) ease,
+              background var(--duration-fast) ease;
 }
 
-.form-input:focus,
 .form-textarea:focus {
   border-color: var(--accent-primary);
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
   background: var(--bg-card);
-}
-
-.form-textarea {
-  min-height: 100px;
-  resize: vertical;
-  line-height: 1.5;
 }
 
 .form-hint {
@@ -368,7 +386,26 @@ a:hover {
   margin-top: 20px;
 }
 
-/* --- 11. Buttons --- */
+.form-error-msg {
+  display: none;
+  color: var(--accent-primary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin-top: 6px;
+  padding: 8px 12px;
+  background: var(--verdict-false-bg);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--accent-primary);
+  animation: fadeUp 0.3s var(--ease-out) both;
+}
+
+.form-error-msg.show {
+  display: block;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
 .btn {
   font-family: var(--font-sans);
   font-size: 0.875rem;
@@ -413,7 +450,9 @@ a:hover {
   border-color: var(--text-muted);
 }
 
-/* --- 12. Mode Toggle --- */
+/* ============================================
+   MODE TOGGLE
+   ============================================ */
 .mode-toggle {
   display: inline-flex;
   background: var(--bg-page);
@@ -448,9 +487,22 @@ a:hover {
   color: var(--text-secondary);
 }
 
-/* --- 13. Example Cards --- */
+.mode-transition {
+  transition: opacity var(--duration-normal) var(--ease-out),
+              transform var(--duration-normal) var(--ease-out);
+}
+
+.mode-switching {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+/* ============================================
+   EXAMPLE CARDS
+   ============================================ */
 .example-claims {
-  margin-top: 28px;
+  margin-top: 20px;
+  margin-bottom: 0;
 }
 
 .example-title {
@@ -463,12 +515,15 @@ a:hover {
 }
 
 .example-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 10px;
 }
 
 .example-card {
+  flex: 1 1 220px;
+  max-width: 280px;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
@@ -478,6 +533,7 @@ a:hover {
   cursor: pointer;
   transition: all var(--duration-normal) var(--ease-out);
   line-height: 1.45;
+  text-align: center;
 }
 
 .example-card:hover {
@@ -487,25 +543,46 @@ a:hover {
   transform: translateY(-2px);
 }
 
-/* --- 14. Results Header --- */
+/* ============================================
+   RESULTS HEADER
+   ============================================ */
 .results-header {
-  margin-bottom: 8px;
+  margin-top: 20px;
+  margin-bottom: 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-strong);
 }
 
-.results-meta {
-  font-size: 0.8125rem;
-  color: var(--text-muted);
-  margin-top: 4px;
+.results-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: 0;
 }
 
-/* --- 15. Claim Cards --- */
+#results {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+#results:empty {
+  display: none;
+}
+
+/* ============================================
+   CLAIM CARD (base for verdict/analysis/sources)
+   ============================================ */
 .claim-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 28px;
   box-shadow: var(--shadow-sm);
-  transition: all var(--duration-normal) var(--ease-out);
+  min-width: 0;
+  overflow-wrap: break-word;
+  transition: box-shadow var(--duration-normal) var(--ease-out);
 }
 
 .claim-card:hover {
@@ -516,22 +593,66 @@ a:hover {
   font-size: 1.0625rem;
   font-weight: 500;
   color: var(--text-primary);
-  line-height: 1.5;
-  margin-bottom: 18px;
+  line-height: 1.6;
+  margin-bottom: 20px;
   letter-spacing: -0.01em;
 }
 
-.verdict-row {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
-  padding-bottom: 18px;
-  border-bottom: 1px solid var(--border);
+.claim-label {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent-secondary);
+  background: var(--accent-secondary-light);
+  border: 1px solid var(--accent-secondary-border);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  margin-right: 8px;
+  margin-bottom: 4px;
+  vertical-align: middle;
 }
 
-/* --- 16. Verdict Badges --- */
+.verdict-card {
+  padding-bottom: 28px;
+}
+
+/* ============================================
+   VERDICT GRID (3-column centered layout)
+   ============================================ */
+.verdict-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+  padding: 20px 0;
+  margin-bottom: 20px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+
+.verdict-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+
+.cell-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+/* ============================================
+   VERDICT BADGES
+   ============================================ */
 .verdict-badge {
   display: inline-flex;
   align-items: center;
@@ -544,14 +665,17 @@ a:hover {
   text-transform: uppercase;
 }
 
-.verdict-true,
+.verdict-cell .verdict-badge {
+  font-size: 0.875rem;
+  padding: 8px 16px;
+}
+
 .verdict-verified {
   background: var(--verdict-true-bg);
   color: var(--verdict-true);
   border: 1px solid var(--verdict-true-border);
 }
 
-.verdict-false,
 .verdict-debunked {
   background: var(--verdict-false-bg);
   color: var(--verdict-false);
@@ -576,36 +700,24 @@ a:hover {
   flex-shrink: 0;
 }
 
-/* --- 17. Confidence --- */
-.confidence-score {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 120px;
-}
-
-.confidence-label {
-  font-size: 0.6875rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
-}
-
+/* ============================================
+   CONFIDENCE METER
+   ============================================ */
 .confidence-value {
-  font-size: 1.375rem;
+  font-size: 1.75rem;
   font-weight: 700;
   letter-spacing: -0.03em;
+  line-height: 1;
   color: var(--accent-gold);
 }
 
 .confidence-meter {
-  width: 100%;
+  width: 80%;
   height: 4px;
+  margin: 0 auto;
   background: var(--border);
   border-radius: 2px;
   overflow: hidden;
-  margin-top: 4px;
 }
 
 .confidence-fill {
@@ -619,74 +731,198 @@ a:hover {
   animation-delay: var(--delay, 0.5s);
 }
 
-/* --- 18. Classification --- */
+/* ============================================
+   CLASSIFICATION BADGE
+   ============================================ */
 .classification-badge {
   display: inline-flex;
   align-items: center;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 600;
-  padding: 4px 12px;
+  padding: 6px 14px;
   border-radius: var(--radius-full);
   background: var(--accent-secondary-light);
   color: var(--accent-secondary);
-  border: 1px solid rgba(8, 145, 178, 0.2);
+  border: 1px solid var(--accent-secondary-border);
   letter-spacing: 0.01em;
 }
 
-/* --- 19. Evidence --- */
-.evidence-section {
+/* ============================================
+   METRICS ROW
+   ============================================ */
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
   margin-top: 20px;
 }
 
-.evidence-title {
-  font-size: 0.8125rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-secondary);
-  margin-bottom: 12px;
+.metric-card {
+  background: var(--bg-page);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  text-align: center;
+  cursor: help;
+  position: relative;
+  overflow: hidden;
+  transition: all var(--duration-normal) var(--ease-out);
 }
 
-.evidence-list {
-  list-style: none;
+.metric-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent-secondary);
+  transform: scaleX(0.3);
+  transform-origin: center;
+  transition: transform var(--duration-normal) var(--ease-out);
+}
+
+.metric-card:hover {
+  transform: translateY(-4px);
+  background: var(--bg-card);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+}
+
+.metric-card:hover::after {
+  transform: scaleX(1);
+}
+
+.metric-card:hover .metric-value {
+  transform: scale(1.08);
+}
+
+.metric-value {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  transition: transform var(--duration-normal) var(--ease-bounce);
+}
+
+.metric-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+/* ============================================
+   BATCH SUMMARY
+   ============================================ */
+.batch-summary {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px 28px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.summary-stat {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 8px;
+  border-right: 1px solid var(--border);
+  transition: transform var(--duration-normal) var(--ease-out);
 }
 
-.evidence-item {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  line-height: 1.55;
-  padding: 10px 14px;
-  background: var(--bg-page);
-  border-radius: var(--radius-sm);
-  border-left: 3px solid var(--accent-secondary);
+.summary-stat:last-child {
+  border-right: none;
 }
 
-/* --- 20. Sources --- */
-.sources-section {
-  margin-top: 24px;
+.summary-stat:hover {
+  transform: translateY(-2px);
 }
 
-.sources-title {
-  font-size: 0.8125rem;
+.stat-value {
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ============================================
+   SECTION HEADINGS (used in Analysis / Sources cards)
+   ============================================ */
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9375rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--text-secondary);
-  margin-bottom: 12px;
+  color: var(--text-primary);
+  margin-bottom: 16px;
 }
 
+.section-heading-lg {
+  font-size: 1.125rem;
+  letter-spacing: -0.01em;
+  text-transform: none;
+}
+
+.section-heading svg {
+  color: var(--accent-secondary);
+  flex-shrink: 0;
+}
+
+/* ============================================
+   ANALYSIS CARD CONTENT
+   ============================================ */
+.evidence-item {
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+  padding: 16px 20px;
+  background: var(--bg-page);
+  border-left: 3px solid var(--accent-secondary);
+  border-radius: var(--radius-sm);
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+/* ============================================
+   SOURCE CARDS
+   ============================================ */
 .source-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 16px 18px;
-  margin-bottom: 10px;
-  transition: all var(--duration-normal) var(--ease-out);
+  margin-bottom: 12px;
   position: relative;
   overflow: hidden;
+  min-width: 0;
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.source-card:last-child {
+  margin-bottom: 0;
 }
 
 .source-card::before {
@@ -711,6 +947,20 @@ a:hover {
   opacity: 1;
 }
 
+.source-label {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-secondary);
+  background: var(--accent-secondary-light);
+  border: 1px solid var(--accent-secondary-border);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  margin-bottom: 8px;
+}
+
 .source-header {
   display: flex;
   align-items: flex-start;
@@ -727,38 +977,72 @@ a:hover {
   letter-spacing: -0.01em;
 }
 
+.source-tier-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.source-domain-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  background: var(--bg-page);
+  border: 1px solid var(--border);
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+}
+
 .source-tier {
+  display: inline-flex;
+  align-items: center;
   font-size: 0.625rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  padding: 2px 8px;
+  padding: 3px 10px;
   border-radius: var(--radius-full);
   flex-shrink: 0;
   white-space: nowrap;
+  line-height: 1.4;
 }
 
 .tier-1 {
   background: var(--verdict-true-bg);
   color: var(--verdict-true);
+  border: 1px solid var(--verdict-true-border);
 }
 
 .tier-2 {
   background: var(--accent-secondary-light);
   color: var(--accent-secondary);
+  border: 1px solid var(--accent-secondary-border);
 }
 
 .tier-3 {
+  background: var(--verdict-disputed-bg);
+  color: var(--verdict-disputed);
+  border: 1px solid var(--verdict-disputed-border);
+}
+
+.tier-4 {
   background: var(--verdict-unverifiable-bg);
   color: var(--verdict-unverifiable);
+  border: 1px solid var(--verdict-unverifiable-border);
 }
 
 .source-url {
+  display: block;
   font-size: 0.75rem;
   color: var(--text-primary);
-  word-break: break-all;
   margin-bottom: 8px;
-  display: block;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   transition: color var(--duration-fast) ease;
 }
 
@@ -771,6 +1055,8 @@ a:hover {
   color: var(--text-secondary);
   line-height: 1.55;
   margin-bottom: 8px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .source-meta {
@@ -804,105 +1090,17 @@ a:hover {
   color: var(--verdict-unverifiable);
 }
 
-.source-link-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
+/* ============================================
+   LOADING STAGES
+   ============================================ */
+#loading {
+  display: none;
 }
 
-.source-link-label {
-  font-size: 0.6875rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+#loading.htmx-request {
+  display: block;
 }
 
-/* --- 21. Metrics --- */
-.metrics-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 12px;
-  margin-top: 20px;
-}
-
-.metric-card {
-  background: var(--bg-page);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 16px;
-  text-align: center;
-  transition: all var(--duration-normal) var(--ease-out);
-  position: relative;
-  overflow: hidden;
-}
-
-.metric-card::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--accent-secondary);
-}
-
-.metric-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
-}
-
-.metric-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  color: var(--text-primary);
-}
-
-.metric-label {
-  font-size: 0.6875rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
-  margin-top: 4px;
-}
-
-/* --- 22. Batch Summary --- */
-.batch-summary {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 24px 28px;
-  display: flex;
-  gap: 24px;
-  flex-wrap: wrap;
-  box-shadow: var(--shadow-sm);
-}
-
-.summary-stat {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.stat-value {
-  font-size: 1.75rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  color: var(--text-primary);
-}
-
-.stat-label {
-  font-size: 0.6875rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
-}
-
-/* --- 23. Stages (Loading) --- */
 .stages {
   display: flex;
   flex-direction: column;
@@ -969,35 +1167,9 @@ a:hover {
   color: var(--text-primary);
 }
 
-/* --- 24. Error Card --- */
-.error-card {
-  background: var(--verdict-false-bg);
-  border: 1px solid var(--verdict-false-border);
-  border-radius: var(--radius-lg);
-  padding: 24px 28px;
-}
-
-.error-title {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--verdict-false);
-  margin-bottom: 8px;
-}
-
-.error-message {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  line-height: 1.55;
-  margin-bottom: 14px;
-}
-
-.error-action {
-  font-size: 0.8125rem;
-  color: var(--accent-primary);
-  font-weight: 600;
-}
-
-/* --- 25. Footer --- */
+/* ============================================
+   FOOTER
+   ============================================ */
 .footer {
   margin-top: 40px;
   padding-top: 20px;
@@ -1007,114 +1179,53 @@ a:hover {
   text-align: center;
 }
 
-/* --- 26. Keyframes --- */
+/* ============================================
+   KEYFRAMES
+   ============================================ */
 @keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.7);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: scale(0.7); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes slideLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(-16px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes stampIn {
-  0% {
-    opacity: 0;
-    transform: scale(2.5) rotate(-8deg);
-  }
-  60% {
-    opacity: 1;
-    transform: scale(0.95) rotate(1deg);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) rotate(0deg);
-  }
+  0%   { opacity: 0; transform: scale(2.5) rotate(-8deg); }
+  60%  { opacity: 1; transform: scale(0.95) rotate(1deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
 }
 
 @keyframes fillBar {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
 
 @keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.15);
-  }
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.7; transform: scale(1.15); }
 }
 
 @keyframes float {
-  0%, 100% {
-    transform: translateX(-50%) translateY(0);
-  }
-  50% {
-    transform: translateX(-50%) translateY(-12px);
-  }
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%      { transform: translateX(-50%) translateY(-12px); }
 }
 
 @keyframes logoIn {
-  from {
-    opacity: 0;
-    transform: scale(0.4) rotate(-12deg);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) rotate(0deg);
-  }
+  from { opacity: 0; transform: scale(0.4) rotate(-12deg); }
+  to { opacity: 1; transform: scale(1) rotate(0deg); }
 }
 
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-@keyframes glowPulse {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.2);
-  }
-  50% {
-    box-shadow: 0 0 0 8px rgba(220, 38, 38, 0);
-  }
-}
-
-/* --- 27. Animation Utilities --- */
+/* ============================================
+   ANIMATION UTILITIES
+   ============================================ */
 .anim-fade-up {
   animation: fadeUp 0.6s var(--ease-out) both;
   animation-delay: var(--delay, 0s);
@@ -1135,17 +1246,9 @@ a:hover {
   animation-delay: var(--delay, 0.3s);
 }
 
-.anim-glow {
-  animation: glowPulse 2s ease infinite;
-}
-
-.shimmer-bg {
-  background: linear-gradient(90deg, var(--bg-page) 25%, var(--bg-card) 50%, var(--bg-page) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s ease infinite;
-}
-
-/* --- 28. Responsive --- */
+/* ============================================
+   MOBILE HAMBURGER MENU
+   ============================================ */
 .hamburger {
   display: none;
   position: fixed;
@@ -1181,6 +1284,9 @@ a:hover {
   z-index: 90;
 }
 
+/* ============================================
+   RESPONSIVE
+   ============================================ */
 @media (max-width: 768px) {
   body {
     grid-template-columns: 1fr;
@@ -1215,608 +1321,38 @@ a:hover {
     padding: 20px;
   }
 
-  .example-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .verdict-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
   .metrics-row {
     grid-template-columns: repeat(2, 1fr);
   }
 
   .batch-summary {
-    flex-direction: column;
-    gap: 16px;
+    grid-template-columns: 1fr;
+  }
+
+  .summary-stat {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 16px;
+  }
+
+  .summary-stat:last-child {
+    border-bottom: none;
   }
 }
 
-/* --- 29. Reduced Motion --- */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* --- 30. Verdict Grid (3-column layout) --- */
-.verdict-card {
-  padding-bottom: 28px;
-}
-
-.verdict-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 20px;
-  padding: 20px 0;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 20px;
-}
-
-.verdict-cell {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.cell-label {
-  font-size: 0.6875rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-muted);
-}
-
-.verdict-cell .verdict-badge {
-  align-self: flex-start;
-  font-size: 0.875rem;
-  padding: 8px 16px;
-}
-
-.verdict-cell .confidence-value {
-  font-size: 1.75rem;
-  line-height: 1;
-}
-
-.verdict-cell .classification-badge {
-  align-self: flex-start;
-  font-size: 0.8125rem;
-  padding: 6px 14px;
-}
-
-/* --- 31. Section Headings --- */
-.section-heading {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.9375rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-primary);
-  margin-bottom: 16px;
-}
-
-.section-heading svg {
-  color: var(--accent-secondary);
-  flex-shrink: 0;
-}
-
-/* --- 32. Analysis & Sources Cards --- */
-.analysis-card {
-  background: var(--bg-card);
-}
-
-.analysis-card .evidence-item {
-  background: var(--bg-page);
-  padding: 16px 20px;
-  border-left: 3px solid var(--accent-secondary);
-  border-radius: var(--radius-sm);
-  font-size: 0.9375rem;
-  line-height: 1.6;
-  color: var(--text-primary);
-}
-
-.sources-card {
-  background: var(--bg-card);
-}
-
-.sources-card .source-card {
-  margin-bottom: 12px;
-}
-
-.sources-card .source-card:last-child {
-  margin-bottom: 0;
-}
-
-/* --- 33. Remove old verdict-row styling (replaced by grid) --- */
-.verdict-row {
-  display: none;
-}
-
-/* --- 34. Content gap tightening --- */
-.content {
-  gap: 20px;
-  overflow-x: hidden;
-}
-
-.hero {
-  padding: 24px 0 0;
-  margin-bottom: 0;
-}
-
-.example-claims {
-  margin-top: 20px;
-  margin-bottom: 0;
-}
-
-/* --- 35. Results Header --- */
-.results-header {
-  margin-top: 20px;
-  margin-bottom: 0;
-  padding-top: 20px;
-  border-top: 1px solid var(--border-strong);
-}
-
-.results-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--text-primary);
-  margin-bottom: 0;
-  padding-top: 0;
-}
-
-#results {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-#results:empty {
-  display: none;
-}
-
-/* --- 37. Bolder verdict cell labels --- */
-.cell-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--text-primary);
-}
-
-/* --- 39. HTMX Loading Indicator --- */
-#loading {
-  display: none;
-}
-
-#loading.htmx-request {
-  display: block;
-}
-
-/* --- 40. Fix horizontal scroll on resize --- */
-html, body {
-  overflow-x: hidden;
-  max-width: 100%;
-}
-
-.main {
-  min-width: 0;
-  overflow-x: hidden;
-}
-
-.content, .claim-card, .source-card, .evidence-item {
-  min-width: 0;
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-}
-
-.source-url, .source-snippet {
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
-/* --- 41. Claim label prefix --- */
-.claim-label {
-  display: inline-block;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--accent-primary);
-  margin-right: 8px;
-  padding: 3px 10px;
-  background: var(--verdict-false-bg);
-  border-radius: var(--radius-full);
-  vertical-align: middle;
-  margin-bottom: 4px;
-}
-
-.claim-text {
-  font-size: 1.0625rem;
-  font-weight: 500;
-  color: var(--text-primary);
-  line-height: 1.6;
-  margin-bottom: 20px;
-  letter-spacing: -0.01em;
-}
-
-/* --- 42. Batch Summary — centered stats --- */
-.batch-summary {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 24px 28px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  box-shadow: var(--shadow-sm);
-}
-
-.summary-stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 12px 8px;
-  border-right: 1px solid var(--border);
-  transition: transform var(--duration-normal) var(--ease-out);
-}
-
-.summary-stat:last-child {
-  border-right: none;
-}
-
-.summary-stat:hover {
-  transform: translateY(-2px);
-}
-
-.stat-value {
-  font-size: 2.25rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  color: var(--text-primary);
-  line-height: 1;
-}
-
-.stat-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-muted);
-  text-align: center;
-}
-
-/* --- 43. Metric Card Hover Effects --- */
-.metric-card {
-  background: var(--bg-page);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 16px;
-  text-align: center;
-  transition: all var(--duration-normal) var(--ease-out);
-  position: relative;
-  overflow: hidden;
-  cursor: help;
-}
-
-.metric-card::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--accent-secondary);
-  transform: scaleX(0.3);
-  transform-origin: center;
-  transition: transform var(--duration-normal) var(--ease-out);
-}
-
-.metric-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--border-strong);
-  background: var(--bg-card);
-}
-
-.metric-card:hover::after {
-  transform: scaleX(1);
-}
-
-.metric-card:hover .metric-value {
-  transform: scale(1.08);
-}
-
-.metric-value {
-  font-size: 1.75rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  color: var(--text-primary);
-  transition: transform var(--duration-normal) var(--ease-bounce);
-  display: block;
-}
-
-.metric-label {
-  font-size: 0.6875rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
-  margin-top: 6px;
-}
-
-/* --- 44. Sidebar section spacing --- */
-.sidebar-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.sidebar-section + .sidebar-section {
-  padding-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-/* --- 45. Mode toggle transition --- */
-.mode-transition {
-  transition: opacity var(--duration-normal) var(--ease-out),
-              transform var(--duration-normal) var(--ease-out);
-}
-
-.mode-switching {
-  opacity: 0;
-  transform: translateY(-8px);
-}
-
-.form-textarea {
-  transition: min-height var(--duration-normal) var(--ease-out),
-              border-color var(--duration-fast) ease,
-              box-shadow var(--duration-fast) ease;
-}
-
-/* --- 46. Center example cards --- */
-.example-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-}
-
-.example-card {
-  flex: 1 1 220px;
-  max-width: 280px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 14px 16px;
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all var(--duration-normal) var(--ease-out);
-  line-height: 1.45;
-  text-align: center;
-}
-
-.example-card:hover {
-  border-color: var(--accent-primary);
-  color: var(--text-primary);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
-}
-
-/* --- 47. Card spacing in results --- */
-.verdict-card + .analysis-card,
-.analysis-card + .sources-card,
-.verdict-card + .sources-card {
-  margin-top: 0;
-}
-
-/* --- 48. Remove vertical scroll on initial load --- */
-html, body {
-  height: auto;
-  min-height: 100vh;
-}
-
-body {
-  min-height: 100vh;
-}
-
-.main {
-  min-height: auto;
-}
-
-/* --- 49. Claim label color (teal instead of red) --- */
-.claim-label {
-  color: var(--accent-secondary);
-  background: var(--accent-secondary-light);
-  border: 1px solid rgba(8, 145, 178, 0.2);
-}
-
-/* --- 50. Center verdict grid cells content --- */
-.verdict-grid {
-  text-align: center;
-}
-
-.verdict-cell {
-  align-items: center;
-}
-
-.verdict-cell .verdict-badge,
-.verdict-cell .classification-badge {
-  align-self: center;
-}
-
-.verdict-cell .cell-label {
-  text-align: center;
-}
-
-.verdict-cell .confidence-meter {
-  width: 80%;
-  margin: 0 auto;
-}
-
-/* --- 51. Validation error message --- */
-.form-error-msg {
-  display: none;
-  color: var(--accent-primary);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  margin-top: 6px;
-  padding: 8px 12px;
-  background: var(--verdict-false-bg);
-  border-radius: var(--radius-sm);
-  border-left: 3px solid var(--accent-primary);
-  animation: fadeUp 0.3s var(--ease-out) both;
-}
-
-.form-error-msg.show {
-  display: block;
-}
-
-/* --- 52. Sidebar — unified dot color --- */
-.sidebar-item .dot,
-.sidebar-item .dot.gold {
-  background: var(--accent-secondary);
-}
-
-/* --- 53. Source domain tag --- */
-.source-domain-tag {
-  display: inline-block;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  background: var(--bg-page);
-  padding: 2px 8px;
-  border-radius: var(--radius-sm);
-  margin-right: 6px;
-  letter-spacing: 0.02em;
-}
-
-.source-tier-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
-/* --- 54. Source label (Source 1, Source 2, etc) --- */
-.source-label {
-  display: inline-block;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--accent-secondary);
-  background: var(--accent-secondary-light);
-  padding: 3px 10px;
-  border-radius: var(--radius-full);
-  margin-bottom: 8px;
-  border: 1px solid rgba(8, 145, 178, 0.2);
-}
-
-/* --- 55. Final tuning --- */
-
-/* Fix 1: Remove phantom vertical scrollbar */
-html {
-  overflow-y: auto;
-}
-
-body {
-  min-height: 0;
-}
-
-/* Fix 2: Restore tier pill styling (section 50 broke flex alignment) */
-.source-tier {
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.625rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding: 3px 10px;
-  border-radius: var(--radius-full);
-  flex-shrink: 0;
-  white-space: nowrap;
-  line-height: 1.4;
-}
-
-.tier-1 {
-  background: var(--verdict-true-bg);
-  color: var(--verdict-true);
-  border: 1px solid var(--verdict-true-border);
-}
-
-.tier-2 {
-  background: var(--accent-secondary-light);
-  color: var(--accent-secondary);
-  border: 1px solid rgba(8, 145, 178, 0.2);
-}
-
-.tier-3 {
-  background: var(--verdict-disputed-bg);
-  color: var(--verdict-disputed);
-  border: 1px solid var(--verdict-disputed-border);
-}
-
-.tier-4 {
-  background: var(--verdict-unverifiable-bg);
-  color: var(--verdict-unverifiable);
-  border: 1px solid var(--verdict-unverifiable-border);
-}
-
-.source-domain-tag {
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  background: var(--bg-page);
-  padding: 3px 10px;
-  border-radius: var(--radius-full);
-  letter-spacing: 0.02em;
-  border: 1px solid var(--border);
-  line-height: 1.4;
-}
-
-/* Fix 3: Force verdict grid to always be 3 columns and center items */
-.verdict-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 20px;
-  padding: 20px 0;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.verdict-cell {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 10px;
-  min-width: 0;
-}
-
-/* Mobile: stack vertically but keep centered */
 @media (max-width: 640px) {
   .verdict-grid {
     grid-template-columns: 1fr;
   }
 }
 
-/* Fix 4: Narrower sidebar */
-:root {
-  --sidebar-width: 210px;
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
