@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
 
-{% if results|length > 1 %}
+{% if reports|length > 1 %}
 <div class="batch-summary anim-fade-up" style="--delay: 0.1s">
   <div class="summary-stat">
-    <span class="stat-value">{{ results|length }}</span>
+    <span class="stat-value">{{ reports|length }}</span>
     <span class="stat-label">Claims Analyzed</span>
   </div>
-  {% set verified_count = results|selectattr('verdict', 'equalto', 'VERIFIED')|list|length %}
-  {% set debunked_count = results|selectattr('verdict', 'equalto', 'DEBUNKED')|list|length %}
+  {% set verified_count = reports|selectattr('verdict', 'equalto', 'VERIFIED')|list|length %}
+  {% set debunked_count = reports|selectattr('verdict', 'equalto', 'DEBUNKED')|list|length %}
   <div class="summary-stat">
     <span class="stat-value" style="color: var(--verdict-true)">{{ verified_count }}</span>
     <span class="stat-label">Verified</span>
@@ -20,53 +20,55 @@
 </div>
 {% endif %}
 
-{% for result in results %}
+{% for report in reports %}
 <div class="claim-card anim-fade-up" style="--delay: {{ loop.index0 * 0.15 + 0.2 }}s">
-  <p class="claim-text">{{ result.claim }}</p>
+  <p class="claim-text">{{ report.claim_text }}</p>
 
   <div class="verdict-row">
-    <span class="verdict-badge verdict-{{ result.verdict|lower }} anim-stamp" style="--delay: {{ loop.index0 * 0.15 + 0.4 }}s">
-      <!-- Verdict Icon -->
-      {% if result.verdict == 'VERIFIED' %}
+    <span class="verdict-badge {{ report.verdict_badge_class }} anim-stamp" style="--delay: {{ loop.index0 * 0.15 + 0.4 }}s">
+      {% if report.verdict == 'VERIFIED' %}
         <svg class="verdict-icon" viewBox="0 0 16 16" fill="none"><path d="M8 1L2 4v4c0 3.5 2.6 6.8 6 7.6 3.4-.8 6-4.1 6-7.6V4L8 1z" fill="currentColor" opacity="0.2"/><path d="M5.5 8l2 2 3-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      {% elif result.verdict == 'DEBUNKED' %}
+      {% elif report.verdict == 'DEBUNKED' %}
         <svg class="verdict-icon" viewBox="0 0 16 16" fill="none"><path d="M8 1L2 4v4c0 3.5 2.6 6.8 6 7.6 3.4-.8 6-4.1 6-7.6V4L8 1z" fill="currentColor" opacity="0.2"/><path d="M6 6l4 4M10 6l-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-      {% elif result.verdict == 'DISPUTED' %}
+      {% elif report.verdict == 'DISPUTED' %}
         <svg class="verdict-icon" viewBox="0 0 16 16" fill="none"><path d="M8 1L2 4v4c0 3.5 2.6 6.8 6 7.6 3.4-.8 6-4.1 6-7.6V4L8 1z" fill="currentColor" opacity="0.2"/><path d="M8 5v3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="11" r="0.75" fill="currentColor"/></svg>
       {% else %}
         <svg class="verdict-icon" viewBox="0 0 16 16" fill="none"><path d="M8 1L2 4v4c0 3.5 2.6 6.8 6 7.6 3.4-.8 6-4.1 6-7.6V4L8 1z" fill="currentColor" opacity="0.2"/><path d="M5.5 8h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
       {% endif %}
-      {{ result.verdict }}
+      {{ report.verdict }}
     </span>
 
     <div class="confidence-score">
       <span class="confidence-label">Confidence</span>
-      <span class="confidence-value">{{ result.confidence }}%</span>
+      <span class="confidence-value">{{ report.confidence_score }}%</span>
       <div class="confidence-meter">
-        <div class="confidence-fill" style="--fill: {{ result.confidence }}%; --delay: {{ loop.index0 * 0.15 + 0.6 }}s"></div>
+        <div class="confidence-fill" style="--fill: {{ report.confidence_score }}%; --delay: {{ loop.index0 * 0.15 + 0.6 }}s"></div>
       </div>
     </div>
 
-    {% if result.classification %}
-    <span class="classification-badge anim-scale-in" style="--delay: {{ loop.index0 * 0.15 + 0.5 }}s">{{ result.classification }}</span>
+    {% if report.misinfo_type and report.misinfo_type != 'Unclassified' %}
+    <span class="classification-badge anim-scale-in" style="--delay: {{ loop.index0 * 0.15 + 0.5 }}s">{{ report.misinfo_type }}</span>
     {% endif %}
   </div>
 
-  {% if result.evidence %}
+  {% if report.reasoning_summary %}
   <div class="evidence-section">
-    <h3 class="evidence-title">Key Evidence</h3>
-    <ul class="evidence-list">
-      {% for item in result.evidence %}
-      <li class="evidence-item anim-slide-left" style="--delay: {{ loop.index0 * 0.08 + 0.5 }}s">{{ item }}</li>
-      {% endfor %}
-    </ul>
+    <h3 class="evidence-title">Analysis</h3>
+    <div class="evidence-item anim-slide-left" style="--delay: 0.5s">{{ report.reasoning_summary }}</div>
   </div>
   {% endif %}
 
-  {% if result.sources %}
+  {% if report.key_contradiction %}
+  <div class="evidence-section">
+    <h3 class="evidence-title">Key Contradiction</h3>
+    <div class="evidence-item anim-slide-left" style="--delay: 0.55s; border-left-color: var(--verdict-false);">{{ report.key_contradiction }}</div>
+  </div>
+  {% endif %}
+
+  {% if report.sources %}
   <div class="sources-section">
-    <h3 class="sources-title">Sources Consulted ({{ result.sources|length }})</h3>
-    {% for source in result.sources %}
+    <h3 class="sources-title">Sources Consulted ({{ report.sources|length }})</h3>
+    {% for source in report.sources %}
     <div class="source-card anim-fade-up" style="--delay: {{ loop.index0 * 0.07 + 0.6 }}s">
       <div class="source-header">
         <span class="source-title">{{ source.title }}</span>
@@ -81,10 +83,6 @@
         <span class="source-stance stance-{{ source.stance|lower }}">{{ source.stance }}</span>
         {% endif %}
       </div>
-      <div class="source-link-row">
-        <span class="source-link-label">Source Link</span>
-        <a class="source-url" href="{{ source.url }}" target="_blank" rel="noopener">{{ source.url }}</a>
-      </div>
     </div>
     {% endfor %}
   </div>
@@ -92,16 +90,16 @@
 
   <div class="metrics-row">
     <div class="metric-card anim-scale-in" style="--delay: 0.7s">
-      <div class="metric-value">{{ result.confidence }}%</div>
+      <div class="metric-value">{{ report.confidence_score }}%</div>
       <div class="metric-label">Confidence</div>
     </div>
     <div class="metric-card anim-scale-in" style="--delay: 0.8s">
-      <div class="metric-value">{{ result.sources|length if result.sources else 0 }}</div>
+      <div class="metric-value">{{ report.metrics.total_sources if report.metrics else 0 }}</div>
       <div class="metric-label">Sources</div>
     </div>
     <div class="metric-card anim-scale-in" style="--delay: 0.9s">
-      <div class="metric-value">{{ result.verdict }}</div>
-      <div class="metric-label">Verdict</div>
+      <div class="metric-value">{{ report.metrics.high_trust_ratio if report.metrics else '0%' }}</div>
+      <div class="metric-label">High Trust</div>
     </div>
   </div>
 </div>

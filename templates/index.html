@@ -21,14 +21,16 @@
           if (event.detail.failed) { document.querySelector('#results').innerHTML = ''; }
         ">
 
+    <input type="hidden" name="batch_mode" id="batch-mode" value="false">
+
     <div class="mode-toggle">
-      <button type="button" class="mode-btn active" onclick="setMode('single')">Single Claim</button>
-      <button type="button" class="mode-btn" onclick="setMode('batch')">Batch Mode</button>
+      <button type="button" class="mode-btn active" onclick="setMode('single', this)">Single Claim</button>
+      <button type="button" class="mode-btn" onclick="setMode('batch', this)">Batch Mode</button>
     </div>
 
     <div class="form-group">
       <label class="form-label" for="claim-input">Enter a claim to verify</label>
-      <textarea class="form-textarea" id="claim-input" name="claim"
+      <textarea class="form-textarea" id="claim-input" name="claim_text"
                 placeholder="e.g., The Great Wall of China is visible from space with the naked eye"></textarea>
       <p class="form-hint">Paste a single claim or multiple claims separated by blank lines for batch mode.</p>
     </div>
@@ -60,9 +62,10 @@
 <div id="results"></div>
 
 <script>
-function setMode(mode) {
-  document.querySelectorAll('.mode-btn').forEach(function(btn) { btn.classList.remove('active'); });
-  event.target.classList.add('active');
+function setMode(mode, btn) {
+  document.querySelectorAll('.mode-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  document.querySelector('#batch-mode').value = (mode === 'batch') ? 'true' : 'false';
 }
 function fillExample(el) {
   document.querySelector('#claim-input').value = el.textContent;
