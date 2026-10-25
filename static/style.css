@@ -1243,3 +1243,108 @@ a:hover {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* --- 30. Verdict Grid (3-column layout) --- */
+.verdict-card {
+  padding-bottom: 28px;
+}
+
+.verdict-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+  padding: 20px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+
+.verdict-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cell-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.verdict-cell .verdict-badge {
+  align-self: flex-start;
+  font-size: 0.875rem;
+  padding: 8px 16px;
+}
+
+.verdict-cell .confidence-value {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.verdict-cell .classification-badge {
+  align-self: flex-start;
+  font-size: 0.8125rem;
+  padding: 6px 14px;
+}
+
+/* --- 31. Section Headings --- */
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.section-heading svg {
+  color: var(--accent-secondary);
+  flex-shrink: 0;
+}
+
+/* --- 32. Analysis & Sources Cards --- */
+.analysis-card {
+  background: var(--bg-card);
+}
+
+.analysis-card .evidence-item {
+  background: var(--bg-page);
+  padding: 16px 20px;
+  border-left: 3px solid var(--accent-secondary);
+  border-radius: var(--radius-sm);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.sources-card {
+  background: var(--bg-card);
+}
+
+.sources-card .source-card {
+  margin-bottom: 12px;
+}
+
+.sources-card .source-card:last-child {
+  margin-bottom: 0;
+}
+
+/* --- 33. Remove old verdict-row styling (replaced by grid) --- */
+.verdict-row {
+  display: none;
+}
+
+/* --- 34. Content gap tightening --- */
+.content {
+  gap: 20px;
+}
+
+.hero {
+  padding-bottom: 0;
+}

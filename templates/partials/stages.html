@@ -1,18 +1,42 @@
-<div class="stages">
-  <div class="stage active">
+<div class="stages" id="stages-container">
+  <div class="stage" data-stage="0">
     <span class="stage-icon"></span>
     <span class="stage-label">Extracting claims…</span>
   </div>
-  <div class="stage">
+  <div class="stage" data-stage="1">
     <span class="stage-icon"></span>
     <span class="stage-label">Searching sources…</span>
   </div>
-  <div class="stage">
+  <div class="stage" data-stage="2">
     <span class="stage-icon"></span>
     <span class="stage-label">Cross-referencing evidence…</span>
   </div>
-  <div class="stage">
+  <div class="stage" data-stage="3">
     <span class="stage-icon"></span>
     <span class="stage-label">Generating report…</span>
   </div>
 </div>
+
+<script>
+(function() {
+  var stages = document.querySelectorAll('#stages-container .stage');
+  var current = 0;
+  stages[0].classList.add('active');
+  var interval = setInterval(function() {
+    if (!document.getElementById('stages-container')) {
+      clearInterval(interval);
+      return;
+    }
+    stages[current].classList.remove('active');
+    stages[current].classList.add('complete');
+    current++;
+    if (current >= stages.length) {
+      current = stages.length - 1;
+      stages[current].classList.remove('complete');
+      stages[current].classList.add('active');
+      return;
+    }
+    stages[current].classList.add('active');
+  }, 5000);
+})();
+</script>
