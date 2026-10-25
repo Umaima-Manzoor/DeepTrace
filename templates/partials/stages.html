@@ -1,14 +1,18 @@
-<div class="stage-list" style="margin-bottom: 24px;">
-    <div class="stage-pill {{ 'done' if stage >= 2 else 'active' if stage == 1 else '' }}">
-        1. Extract Claims
-    </div>
-    <div class="stage-pill {{ 'done' if stage >= 3 else 'active' if stage == 2 else '' }}">
-        2. Retrieve Sources
-    </div>
-    <div class="stage-pill {{ 'done' if stage >= 4 else 'active' if stage == 3 else '' }}">
-        3. Cross-Reference
-    </div>
-    <div class="stage-pill {{ 'active' if stage == 4 else '' }}">
-        4. Generate Report
-    </div>
+<div class="stages">
+  <div class="stage active">
+    <span class="stage-icon"></span>
+    <span class="stage-label">Extracting claims…</span>
+  </div>
+  <div class="stage">
+    <span class="stage-icon"></span>
+    <span class="stage-label">Searching sources…</span>
+  </div>
+  <div class="stage">
+    <span class="stage-icon"></span>
+    <span class="stage-label">Cross-referencing evidence…</span>
+  </div>
+  <div class="stage">
+    <span class="stage-icon"></span>
+    <span class="stage-label">Generating report…</span>
+  </div>
 </div>
