@@ -1396,3 +1396,12 @@ a:hover {
   letter-spacing: 0.1em;
   color: var(--text-primary);
 }
+
+/* --- 39. HTMX Loading Indicator --- */
+#loading {
+  display: none;
+}
+
+#loading.htmx-request {
+  display: block;
+}
