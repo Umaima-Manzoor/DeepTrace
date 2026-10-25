@@ -1620,3 +1620,106 @@ html, body {
 .verdict-card + .sources-card {
   margin-top: 0;
 }
+
+/* --- 48. Remove vertical scroll on initial load --- */
+html, body {
+  height: auto;
+  min-height: 100vh;
+}
+
+body {
+  min-height: 100vh;
+}
+
+.main {
+  min-height: auto;
+}
+
+/* --- 49. Claim label color (teal instead of red) --- */
+.claim-label {
+  color: var(--accent-secondary);
+  background: var(--accent-secondary-light);
+  border: 1px solid rgba(8, 145, 178, 0.2);
+}
+
+/* --- 50. Center verdict grid cells content --- */
+.verdict-grid {
+  text-align: center;
+}
+
+.verdict-cell {
+  align-items: center;
+}
+
+.verdict-cell .verdict-badge,
+.verdict-cell .classification-badge {
+  align-self: center;
+}
+
+.verdict-cell .cell-label {
+  text-align: center;
+}
+
+.verdict-cell .confidence-meter {
+  width: 80%;
+  margin: 0 auto;
+}
+
+/* --- 51. Validation error message --- */
+.form-error-msg {
+  display: none;
+  color: var(--accent-primary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin-top: 6px;
+  padding: 8px 12px;
+  background: var(--verdict-false-bg);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--accent-primary);
+  animation: fadeUp 0.3s var(--ease-out) both;
+}
+
+.form-error-msg.show {
+  display: block;
+}
+
+/* --- 52. Sidebar — unified dot color --- */
+.sidebar-item .dot,
+.sidebar-item .dot.gold {
+  background: var(--accent-secondary);
+}
+
+/* --- 53. Source domain tag --- */
+.source-domain-tag {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-page);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  margin-right: 6px;
+  letter-spacing: 0.02em;
+}
+
+.source-tier-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* --- 54. Source label (Source 1, Source 2, etc) --- */
+.source-label {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-secondary);
+  background: var(--accent-secondary-light);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  margin-bottom: 8px;
+  border: 1px solid rgba(8, 145, 178, 0.2);
+}

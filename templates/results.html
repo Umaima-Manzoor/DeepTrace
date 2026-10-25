@@ -23,11 +23,11 @@
 
 {% for report in reports %}
 
-<!-- VERDICT CARD: Claim + Verdict Badge + Confidence + Classification + Metrics -->
+<!-- VERDICT CARD -->
 <div class="claim-card verdict-card anim-fade-up" style="--delay: {{ loop.index0 * 0.15 + 0.2 }}s">
   <p class="claim-text">
     <span class="claim-label">
-      {% if reports|length > 1 %}Claim {{ loop.index }}:{% else %}Claim:{% endif %}
+      {% if reports|length > 1 %}Claim {{ loop.index }}{% else %}Claim{% endif %}
     </span>
     {{ report.claim_text }}
   </p>
@@ -85,7 +85,7 @@
   </div>
 </div>
 
-<!-- ANALYSIS CARD: Reasoning summary + key contradiction -->
+<!-- ANALYSIS CARD -->
 {% if report.reasoning_summary or report.key_contradiction %}
 <div class="claim-card analysis-card anim-fade-up" style="--delay: {{ loop.index0 * 0.15 + 0.35 }}s">
   <h3 class="section-heading section-heading-lg">
@@ -106,7 +106,7 @@
 </div>
 {% endif %}
 
-<!-- SOURCES CARD: All source links with tier badges and stances -->
+<!-- SOURCES CARD -->
 {% if report.sources %}
 <div class="claim-card sources-card anim-fade-up" style="--delay: {{ loop.index0 * 0.15 + 0.5 }}s">
   <h3 class="section-heading section-heading-lg">
@@ -115,9 +115,15 @@
   </h3>
   {% for source in report.sources %}
   <div class="source-card anim-fade-up" style="--delay: {{ loop.index0 * 0.07 + 0.6 }}s">
+    <span class="source-label">Source {{ loop.index }}</span>
     <div class="source-header">
       <span class="source-title">{{ source.title }}</span>
-      <span class="source-tier tier-{{ source.tier }}">Tier {{ source.tier }}</span>
+      <div class="source-tier-row">
+        {% if source.domain %}
+        <span class="source-domain-tag">{{ source.domain }}</span>
+        {% endif %}
+        <span class="source-tier tier-{{ source.tier }}">Tier {{ source.tier }}</span>
+      </div>
     </div>
     <a class="source-url" href="{{ source.url }}" target="_blank" rel="noopener">{{ source.url }}</a>
     {% if source.snippet %}

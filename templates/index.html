@@ -15,9 +15,21 @@
         hx-indicator="#loading"
         hx-on::before-request="
           var ta = document.querySelector('#claim-input');
-          if (!ta.value.trim()) { event.preventDefault(); ta.focus(); ta.style.borderColor='var(--accent-primary)'; setTimeout(function(){ta.style.borderColor=''}, 1500); return; }
+          var errMsg = document.querySelector('#form-error');
+          if (!ta.value.trim()) {
+            event.preventDefault();
+            ta.focus();
+            ta.style.borderColor='var(--accent-primary)';
+            errMsg.classList.add('show');
+            errMsg.textContent = 'Please enter a claim to verify.';
+            setTimeout(function(){ ta.style.borderColor=''; errMsg.classList.remove('show'); }, 3000);
+            return;
+          }
+          errMsg.classList.remove('show');
           document.querySelector('#results').innerHTML = '';
-          setTimeout(function(){ document.querySelector('#loading').scrollIntoView({behavior: 'smooth', block: 'center'}); }, 100);
+          setTimeout(function(){
+            document.querySelector('#loading').scrollIntoView({behavior: 'smooth', block: 'start'});
+          }, 150);
         "
         hx-on::after-request="
           if (event.detail.failed) { document.querySelector('#results').innerHTML = ''; }
@@ -35,6 +47,7 @@
       <textarea class="form-textarea" id="claim-input" name="claim_text"
                 placeholder="e.g., The Great Wall of China is visible from space with the naked eye"></textarea>
       <p class="form-hint" id="claim-hint">Enter a single claim to verify.</p>
+      <div class="form-error-msg" id="form-error"></div>
     </div>
 
     <div class="form-actions">
@@ -78,9 +91,9 @@ function setMode(mode, btn) {
   setTimeout(function() {
     if (mode === 'batch') {
       label.textContent = 'Enter multiple claims';
-      textarea.placeholder = 'Paste multiple claims separated by blank lines, e.g.:\n\nThe Great Wall is visible from space\n\nHumans only use 10% of their brains\n\nWater boils at 100°C at sea level';
+      textarea.placeholder = 'Paste multiple claims. You can separate them with blank lines, new lines, or periods.\n\nExample:\n\nThe Great Wall is visible from space\n\nHumans only use 10% of their brains\n\nWater boils at 100°C at sea level';
       textarea.style.minHeight = '180px';
-      hint.textContent = 'Separate each claim with a blank line. Up to 5 claims processed per batch.';
+      hint.textContent = 'Separate claims with blank lines, new lines, or periods. Up to 5 claims processed per batch.';
     } else {
       label.textContent = 'Enter a claim to verify';
       textarea.placeholder = 'e.g., The Great Wall of China is visible from space with the naked eye';
