@@ -15,7 +15,9 @@
         hx-indicator="#loading"
         hx-on::before-request="
           var ta = document.querySelector('#claim-input');
-          if (!ta.value.trim()) { event.preventDefault(); ta.focus(); ta.style.borderColor='var(--accent-primary)'; setTimeout(function(){ta.style.borderColor=''}, 1500); }
+          if (!ta.value.trim()) { event.preventDefault(); ta.focus(); ta.style.borderColor='var(--accent-primary)'; setTimeout(function(){ta.style.borderColor=''}, 1500); return; }
+          document.querySelector('#results').innerHTML = '';
+          setTimeout(function(){ document.querySelector('#loading').scrollIntoView({behavior: 'smooth', block: 'center'}); }, 100);
         "
         hx-on::after-request="
           if (event.detail.failed) { document.querySelector('#results').innerHTML = ''; }
@@ -24,15 +26,15 @@
     <input type="hidden" name="batch_mode" id="batch-mode" value="false">
 
     <div class="mode-toggle">
-      <button type="button" class="mode-btn active" onclick="setMode('single', this)">Single Claim</button>
-      <button type="button" class="mode-btn" onclick="setMode('batch', this)">Batch Mode</button>
+      <button type="button" class="mode-btn active" data-mode="single" onclick="setMode('single', this)">Single Claim</button>
+      <button type="button" class="mode-btn" data-mode="batch" onclick="setMode('batch', this)">Batch Mode</button>
     </div>
 
-    <div class="form-group">
-      <label class="form-label" for="claim-input">Enter a claim to verify</label>
+    <div class="form-group mode-transition" id="form-fields">
+      <label class="form-label" for="claim-input" id="claim-label">Enter a claim to verify</label>
       <textarea class="form-textarea" id="claim-input" name="claim_text"
                 placeholder="e.g., The Great Wall of China is visible from space with the naked eye"></textarea>
-      <p class="form-hint">Paste a single claim or multiple claims separated by blank lines for batch mode.</p>
+      <p class="form-hint" id="claim-hint">Enter a single claim to verify.</p>
     </div>
 
     <div class="form-actions">
@@ -66,7 +68,29 @@ function setMode(mode, btn) {
   document.querySelectorAll('.mode-btn').forEach(function(b) { b.classList.remove('active'); });
   btn.classList.add('active');
   document.querySelector('#batch-mode').value = (mode === 'batch') ? 'true' : 'false';
+
+  var fields = document.querySelector('#form-fields');
+  var label = document.querySelector('#claim-label');
+  var textarea = document.querySelector('#claim-input');
+  var hint = document.querySelector('#claim-hint');
+
+  fields.classList.add('mode-switching');
+  setTimeout(function() {
+    if (mode === 'batch') {
+      label.textContent = 'Enter multiple claims';
+      textarea.placeholder = 'Paste multiple claims separated by blank lines, e.g.:\n\nThe Great Wall is visible from space\n\nHumans only use 10% of their brains\n\nWater boils at 100°C at sea level';
+      textarea.style.minHeight = '180px';
+      hint.textContent = 'Separate each claim with a blank line. Up to 5 claims processed per batch.';
+    } else {
+      label.textContent = 'Enter a claim to verify';
+      textarea.placeholder = 'e.g., The Great Wall of China is visible from space with the naked eye';
+      textarea.style.minHeight = '100px';
+      hint.textContent = 'Enter a single claim to verify.';
+    }
+    fields.classList.remove('mode-switching');
+  }, 200);
 }
+
 function fillExample(el) {
   document.querySelector('#claim-input').value = el.textContent;
   document.querySelector('#claim-input').focus();

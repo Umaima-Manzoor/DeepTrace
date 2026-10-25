@@ -1342,7 +1342,8 @@ a:hover {
 
 /* --- 34. Content gap tightening --- */
 .content {
-  gap: 12px;
+  gap: 20px;
+  overflow-x: hidden;
 }
 
 .hero {
@@ -1351,41 +1352,35 @@ a:hover {
 }
 
 .example-claims {
-  margin-top: 16px;
+  margin-top: 20px;
   margin-bottom: 0;
 }
 
 /* --- 35. Results Header --- */
 .results-header {
-  margin-top: 0;
+  margin-top: 20px;
   margin-bottom: 0;
-  padding-top: 12px;
+  padding-top: 20px;
   border-top: 1px solid var(--border-strong);
 }
 
 .results-title {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--text-primary);
-  margin-bottom: 2px;
+  margin-bottom: 0;
   padding-top: 0;
 }
 
-.results-subtitle {
-  font-size: 0.8125rem;
-  color: var(--text-muted);
+#results {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-#results:not(:empty) {
-  margin-top: 0;
-}
-
-/* --- 36. Bigger section headings --- */
-.section-heading-lg {
-  font-size: 1.125rem;
-  letter-spacing: -0.01em;
-  text-transform: none;
+#results:empty {
+  display: none;
 }
 
 /* --- 37. Bolder verdict cell labels --- */
@@ -1404,4 +1399,224 @@ a:hover {
 
 #loading.htmx-request {
   display: block;
+}
+
+/* --- 40. Fix horizontal scroll on resize --- */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+.main {
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.content, .claim-card, .source-card, .evidence-item {
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+.source-url, .source-snippet {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* --- 41. Claim label prefix --- */
+.claim-label {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent-primary);
+  margin-right: 8px;
+  padding: 3px 10px;
+  background: var(--verdict-false-bg);
+  border-radius: var(--radius-full);
+  vertical-align: middle;
+  margin-bottom: 4px;
+}
+
+.claim-text {
+  font-size: 1.0625rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+
+/* --- 42. Batch Summary — centered stats --- */
+.batch-summary {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px 28px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.summary-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 8px;
+  border-right: 1px solid var(--border);
+  transition: transform var(--duration-normal) var(--ease-out);
+}
+
+.summary-stat:last-child {
+  border-right: none;
+}
+
+.summary-stat:hover {
+  transform: translateY(-2px);
+}
+
+.stat-value {
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* --- 43. Metric Card Hover Effects --- */
+.metric-card {
+  background: var(--bg-page);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  text-align: center;
+  transition: all var(--duration-normal) var(--ease-out);
+  position: relative;
+  overflow: hidden;
+  cursor: help;
+}
+
+.metric-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent-secondary);
+  transform: scaleX(0.3);
+  transform-origin: center;
+  transition: transform var(--duration-normal) var(--ease-out);
+}
+
+.metric-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-strong);
+  background: var(--bg-card);
+}
+
+.metric-card:hover::after {
+  transform: scaleX(1);
+}
+
+.metric-card:hover .metric-value {
+  transform: scale(1.08);
+}
+
+.metric-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  transition: transform var(--duration-normal) var(--ease-bounce);
+  display: block;
+}
+
+.metric-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+/* --- 44. Sidebar section spacing --- */
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.sidebar-section + .sidebar-section {
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* --- 45. Mode toggle transition --- */
+.mode-transition {
+  transition: opacity var(--duration-normal) var(--ease-out),
+              transform var(--duration-normal) var(--ease-out);
+}
+
+.mode-switching {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+.form-textarea {
+  transition: min-height var(--duration-normal) var(--ease-out),
+              border-color var(--duration-fast) ease,
+              box-shadow var(--duration-fast) ease;
+}
+
+/* --- 46. Center example cards --- */
+.example-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.example-card {
+  flex: 1 1 220px;
+  max-width: 280px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-out);
+  line-height: 1.45;
+  text-align: center;
+}
+
+.example-card:hover {
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* --- 47. Card spacing in results --- */
+.verdict-card + .analysis-card,
+.analysis-card + .sources-card,
+.verdict-card + .sources-card {
+  margin-top: 0;
 }

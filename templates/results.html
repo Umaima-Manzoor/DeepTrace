@@ -1,6 +1,5 @@
 <div class="results-header anim-fade-up">
   <h2 class="results-title">Verification Results</h2>
-  <p class="results-subtitle">Cross-referenced analysis from multiple sources</p>
 </div>
 
 {% if reports|length > 1 %}
@@ -26,7 +25,12 @@
 
 <!-- VERDICT CARD: Claim + Verdict Badge + Confidence + Classification + Metrics -->
 <div class="claim-card verdict-card anim-fade-up" style="--delay: {{ loop.index0 * 0.15 + 0.2 }}s">
-  <p class="claim-text">{{ report.claim_text }}</p>
+  <p class="claim-text">
+    <span class="claim-label">
+      {% if reports|length > 1 %}Claim {{ loop.index }}:{% else %}Claim:{% endif %}
+    </span>
+    {{ report.claim_text }}
+  </p>
 
   <div class="verdict-grid">
     <div class="verdict-cell">
@@ -62,21 +66,21 @@
   </div>
 
   <div class="metrics-row">
-    <div class="metric-card anim-scale-in" style="--delay: 0.7s">
+    <div class="metric-card anim-scale-in" style="--delay: 0.7s" title="Total number of sources retrieved and analyzed for this claim">
       <div class="metric-value">{{ report.metrics.total_sources if report.metrics else 0 }}</div>
       <div class="metric-label">Sources</div>
     </div>
-    <div class="metric-card anim-scale-in" style="--delay: 0.8s">
-      <div class="metric-value">{{ report.metrics.supports_count if report.metrics else 0 }}</div>
+    <div class="metric-card anim-scale-in" style="--delay: 0.8s" title="Sources whose content supports the claim">
+      <div class="metric-value" style="color: var(--verdict-true)">{{ report.metrics.supports_count if report.metrics else 0 }}</div>
       <div class="metric-label">Supports</div>
     </div>
-    <div class="metric-card anim-scale-in" style="--delay: 0.85s">
-      <div class="metric-value">{{ report.metrics.contradicts_count if report.metrics else 0 }}</div>
+    <div class="metric-card anim-scale-in" style="--delay: 0.85s" title="Sources whose content contradicts the claim">
+      <div class="metric-value" style="color: var(--verdict-false)">{{ report.metrics.contradicts_count if report.metrics else 0 }}</div>
       <div class="metric-label">Contradicts</div>
     </div>
-    <div class="metric-card anim-scale-in" style="--delay: 0.9s">
-      <div class="metric-value">{{ report.metrics.high_trust_ratio if report.metrics else '0%' }}</div>
-      <div class="metric-label">High Trust</div>
+    <div class="metric-card anim-scale-in" style="--delay: 0.9s" title="Percentage of sources from Tier 1 (government, official) or Tier 2 (wire services, encyclopedias)">
+      <div class="metric-value" style="color: var(--accent-gold)">{{ report.metrics.high_trust_ratio if report.metrics else '0%' }}</div>
+      <div class="metric-label">Tier 1-2</div>
     </div>
   </div>
 </div>
@@ -93,8 +97,8 @@
   {% endif %}
 
   {% if report.key_contradiction %}
-  <h3 class="section-heading" style="margin-top: 20px; color: var(--verdict-false);">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/><path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+  <h3 class="section-heading section-heading-lg" style="margin-top: 24px; color: var(--verdict-false);">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/><path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
     Key Contradiction
   </h3>
   <div class="evidence-item anim-slide-left" style="--delay: 0.55s; border-left-color: var(--verdict-false);">{{ report.key_contradiction }}</div>
@@ -105,8 +109,8 @@
 <!-- SOURCES CARD: All source links with tier badges and stances -->
 {% if report.sources %}
 <div class="claim-card sources-card anim-fade-up" style="--delay: {{ loop.index0 * 0.15 + 0.5 }}s">
-  <h3 class="section-heading">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <h3 class="section-heading section-heading-lg">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
     Sources Consulted ({{ report.sources|length }})
   </h3>
   {% for source in report.sources %}
