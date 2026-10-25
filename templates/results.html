@@ -1,90 +1,110 @@
-<div class="results-container">
-    {% if reports and reports[0].is_mock %}
-    <div class="mock-notice">
-        Running in simulation mode. Nebius API key not configured. Results are illustrative.
-    </div>
-    {% endif %}
+{% extends "base.html" %}
+{% block content %}
 
-    {% if is_batch %}
-    <div class="card" style="margin-bottom: 24px; border-left: 4px solid var(--primary, #0055ff);">
-        <div class="card-title">Batch Results - {{ reports | length }} Claims Analyzed</div>
-        <p style="color: var(--text-secondary, #494983); margin: 0;">Each claim was independently verified against live sources.</p>
-    </div>
-    {% endif %}
-
-    {% for report in reports %}
-
-    {% if is_batch %}
-    <div class="card" style="margin-bottom: 8px; padding: 12px 16px; background: var(--border-subtle, #ebe8e0);">
-        <strong>Claim {{ loop.index }}:</strong> {{ report.claim_text[:120] }}{% if report.claim_text | length > 120 %}...{% endif %}
-    </div>
-    {% endif %}
-
-    <div style="text-align: center; margin-bottom: 32px;">
-        <span class="verdict-badge {{ report.verdict_badge_class }}">
-            {{ report.verdict }}
-        </span>
-    </div>
-
-    <div class="metrics-row">
-        <div class="metric-card">
-            <div class="metric-label">Confidence</div>
-            <div class="metric-value gold">{{ report.confidence_score }}%</div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-label">Sources Examined</div>
-            <div class="metric-value">{{ report.metrics.total_sources }}</div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-label">Classification</div>
-            <div class="metric-value" style="font-size: 1rem;">{{ report.misinfo_type }}</div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-label">High-Trust Ratio</div>
-            <div class="metric-value">{{ report.metrics.high_trust_ratio }}</div>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="card-title">AI Reasoning</div>
-        <p class="reasoning-text">{{ report.reasoning_summary }}</p>
-        {% if report.key_contradiction %}
-        <div class="contradiction-text">
-            <strong>Key Contradiction:</strong> {{ report.key_contradiction }}
-        </div>
-        {% endif %}
-    </div>
-
-    <div class="section-title">Source Evidence ({{ report.metrics.total_sources }} sources)</div>
-
-    {% for source in report.sources %}
-    <div class="source-card" style="--i: {{ loop.index0 }}">
-        <div class="source-header">
-            <span class="source-domain">{{ source.domain }}</span>
-            <span class="tier-badge {{ source.badge_class }}">{{ source.tier_label }}</span>
-        </div>
-        <div class="source-title">{{ source.title }}</div>
-        <div class="source-link-row">
-            <span class="source-link-label">Source Link:</span>
-            <a href="{{ source.url }}" target="_blank" rel="noopener" class="source-url">{{ source.domain }}</a>
-        </div>
-        <p class="source-snippet">
-            <span class="stance-label stance-{{ source.stance | lower }}">{{ source.stance }}:</span>
-            {{ source.stance_summary }}
-        </p>
-    </div>
-    {% endfor %}
-
-    {% if not loop.last and is_batch %}
-    <hr style="border: none; border-top: 2px solid var(--border, #d7d2c1); margin: 40px 0;">
-    {% endif %}
-
-    {% endfor %}
-
-    <div style="margin-top: 24px;">
-        <form method="post" action="/download">
-            <input type="hidden" name="report_markdown" value="{{ combined_markdown }}">
-            <button type="submit" class="btn-primary">Download Report</button>
-        </form>
-    </div>
+{% if results|length > 1 %}
+<div class="batch-summary anim-fade-up" style="--delay: 0.1s">
+  <div class="summary-stat">
+    <span class="stat-value">{{ results|length }}</span>
+    <span class="stat-label">Claims Analyzed</span>
+  </div>
+  {% set verified_count = results|selectattr('verdict', 'equalto', 'VERIFIED')|list|length %}
+  {% set debunked_count = results|selectattr('verdict', 'equalto', 'DEBUNKED')|list|length %}
+  <div class="summary-stat">
+    <span class="stat-value" style="color: var(--verdict-true)">{{ verified_count }}</span>
+    <span class="stat-label">Verified</span>
+  </div>
+  <div class="summary-stat">
+    <span class="stat-value" style="color: var(--verdict-false)">{{ debunked_count }}</span>
+    <span class="stat-label">Debunked</span>
+  </div>
 </div>
+{% endif %}
+
+{% for result in results %}
+<div class="claim-card anim-fade-up" style="--delay: {{ loop.index0 * 0.15 + 0.2 }}s">
+  <p class="claim-text">{{ result.claim }}</p>
+
+  <div class="verdict-row">
+    <span class="verdict-badge verdict-{{ result.verdict|lower }} anim-stamp" style="--delay: {{ loop.index0 * 0.15 + 0.4 }}s">
+      <!-- Verdict Icon -->
+      {% if result.verdict == 'VERIFIED' %}
+        <svg class="verdict-icon" viewBox="0 0 16 16" fill="none"><path d="M8 1L2 4v4c0 3.5 2.6 6.8 6 7.6 3.4-.8 6-4.1 6-7.6V4L8 1z" fill="currentColor" opacity="0.2"/><path d="M5.5 8l2 2 3-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      {% elif result.verdict == 'DEBUNKED' %}
+        <svg class="verdict-icon" viewBox="0 0 16 16" fill="none"><path d="M8 1L2 4v4c0 3.5 2.6 6.8 6 7.6 3.4-.8 6-4.1 6-7.6V4L8 1z" fill="currentColor" opacity="0.2"/><path d="M6 6l4 4M10 6l-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      {% elif result.verdict == 'DISPUTED' %}
+        <svg class="verdict-icon" viewBox="0 0 16 16" fill="none"><path d="M8 1L2 4v4c0 3.5 2.6 6.8 6 7.6 3.4-.8 6-4.1 6-7.6V4L8 1z" fill="currentColor" opacity="0.2"/><path d="M8 5v3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="11" r="0.75" fill="currentColor"/></svg>
+      {% else %}
+        <svg class="verdict-icon" viewBox="0 0 16 16" fill="none"><path d="M8 1L2 4v4c0 3.5 2.6 6.8 6 7.6 3.4-.8 6-4.1 6-7.6V4L8 1z" fill="currentColor" opacity="0.2"/><path d="M5.5 8h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      {% endif %}
+      {{ result.verdict }}
+    </span>
+
+    <div class="confidence-score">
+      <span class="confidence-label">Confidence</span>
+      <span class="confidence-value">{{ result.confidence }}%</span>
+      <div class="confidence-meter">
+        <div class="confidence-fill" style="--fill: {{ result.confidence }}%; --delay: {{ loop.index0 * 0.15 + 0.6 }}s"></div>
+      </div>
+    </div>
+
+    {% if result.classification %}
+    <span class="classification-badge anim-scale-in" style="--delay: {{ loop.index0 * 0.15 + 0.5 }}s">{{ result.classification }}</span>
+    {% endif %}
+  </div>
+
+  {% if result.evidence %}
+  <div class="evidence-section">
+    <h3 class="evidence-title">Key Evidence</h3>
+    <ul class="evidence-list">
+      {% for item in result.evidence %}
+      <li class="evidence-item anim-slide-left" style="--delay: {{ loop.index0 * 0.08 + 0.5 }}s">{{ item }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  {% if result.sources %}
+  <div class="sources-section">
+    <h3 class="sources-title">Sources Consulted ({{ result.sources|length }})</h3>
+    {% for source in result.sources %}
+    <div class="source-card anim-fade-up" style="--delay: {{ loop.index0 * 0.07 + 0.6 }}s">
+      <div class="source-header">
+        <span class="source-title">{{ source.title }}</span>
+        <span class="source-tier tier-{{ source.tier }}">Tier {{ source.tier }}</span>
+      </div>
+      <a class="source-url" href="{{ source.url }}" target="_blank" rel="noopener">{{ source.url }}</a>
+      {% if source.snippet %}
+      <p class="source-snippet">{{ source.snippet }}</p>
+      {% endif %}
+      <div class="source-meta">
+        {% if source.stance %}
+        <span class="source-stance stance-{{ source.stance|lower }}">{{ source.stance }}</span>
+        {% endif %}
+      </div>
+      <div class="source-link-row">
+        <span class="source-link-label">Source Link</span>
+        <a class="source-url" href="{{ source.url }}" target="_blank" rel="noopener">{{ source.url }}</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="metrics-row">
+    <div class="metric-card anim-scale-in" style="--delay: 0.7s">
+      <div class="metric-value">{{ result.confidence }}%</div>
+      <div class="metric-label">Confidence</div>
+    </div>
+    <div class="metric-card anim-scale-in" style="--delay: 0.8s">
+      <div class="metric-value">{{ result.sources|length if result.sources else 0 }}</div>
+      <div class="metric-label">Sources</div>
+    </div>
+    <div class="metric-card anim-scale-in" style="--delay: 0.9s">
+      <div class="metric-value">{{ result.verdict }}</div>
+      <div class="metric-label">Verdict</div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+{% endblock %}

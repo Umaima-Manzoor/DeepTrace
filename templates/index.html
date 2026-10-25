@@ -1,58 +1,73 @@
-{% extends "base.html" %}       <!-- Jinja2 inheritance -->
-{% block title %}DeepTrace — Verify a Claim{% endblock %}
-
+{% extends "base.html" %}
 {% block content %}
 
-<h1 class="page-title">Verify a Claim</h1>
-<p class="page-subtitle">
-    Paste any claim, headline, or article excerpt. DeepTrace will decompose it
-    into atomic facts, search live sources, and cross-reference the evidence.
-</p>
+<div class="hero">
+  <h1 class="hero-title anim-fade-up" style="--delay: 0.1s">
+    Verify any claim with <span class="accent">autonomous AI</span>
+  </h1>
+  <p class="hero-subtitle anim-fade-up" style="--delay: 0.2s">
+    DeepTrace extracts claims, searches credible sources, cross-references evidence, and delivers a verified verdict — all in under 30 seconds.
+  </p>
 
-<!-- htmx intercpts the default browser behaviour when the form is submitted and sends the data to /verify where the server processes it and returns HTML-->
- <!-- innerHTML means replace the contents of the target element - old results are cleared and new ones appear -->
-<!-- loading tells htmx which element to show while the request is in progress -->
-<form class="claim-form"
-      hx-post="/verify"             
-      hx-target="#results-area"
-      hx-swap="innerHTML"
-      hx-indicator="#loading"
-      hx-on::before-request="
-          var text = document.querySelector('[name=claim_text]').value.trim();
-          if (!text) {
-              event.preventDefault();
-              document.getElementById('results-area').innerHTML = '<div class=\'error-box\'>Paste a claim, headline, or article excerpt to get started.</div>';
-              return;
-          }
-          document.getElementById('results-area').innerHTML = '';
-      "
-      hx-on::after-request="if(event.detail.failed) { document.body.classList.remove('htmx-request'); }">       <!-- clears the screen with the previous results when new verification is run -->
+  <form class="claim-form anim-fade-up" style="--delay: 0.3s"
+        hx-post="/verify"
+        hx-target="#results"
+        hx-indicator="#loading"
+        hx-on::before-request="
+          var ta = document.querySelector('#claim-input');
+          if (!ta.value.trim()) { event.preventDefault(); ta.focus(); ta.style.borderColor='var(--accent-primary)'; setTimeout(function(){ta.style.borderColor=''}, 1500); }
+        "
+        hx-on::after-request="
+          if (event.detail.failed) { document.querySelector('#results').innerHTML = ''; }
+        ">
 
-    <textarea
-        name="claim_text"
-        class="claim-textarea"
-        placeholder="Paste a claim to verify. For example: NASA scientists confirmed the discovery of an ancient alien spacecraft beneath Antarctic ice."
-    ></textarea>
-    
+    <div class="mode-toggle">
+      <button type="button" class="mode-btn active" onclick="setMode('single')">Single Claim</button>
+      <button type="button" class="mode-btn" onclick="setMode('batch')">Batch Mode</button>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="claim-input">Enter a claim to verify</label>
+      <textarea class="form-textarea" id="claim-input" name="claim"
+                placeholder="e.g., The Great Wall of China is visible from space with the naked eye"></textarea>
+      <p class="form-hint">Paste a single claim or multiple claims separated by blank lines for batch mode.</p>
+    </div>
+
     <div class="form-actions">
-        <button type="submit" class="btn-primary">
-            Run Verification
-        </button>
-        <label class="checkbox-label">
-            <input type="checkbox" name="batch_mode" value="true">
-            Batch article mode
-        </label>
+      <button type="submit" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6.5 3.5L12 8l-5.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 8H4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Verify Claim
+      </button>
+      <button type="button" class="btn btn-secondary" onclick="document.querySelector('#claim-input').value=''; document.querySelector('#results').innerHTML='';">Clear</button>
     </div>
-</form>
+  </form>
 
-<div id="loading" class="loading-indicator htmx-indicator">
-    <div class="progress-bar-track">
-        <div class="progress-bar-fill"></div>
+  <div class="example-claims anim-fade-up" style="--delay: 0.45s">
+    <p class="example-title">Try an example</p>
+    <div class="example-grid">
+      <div class="example-card" onclick="fillExample(this)">The Great Wall of China is visible from space</div>
+      <div class="example-card" onclick="fillExample(this)">Humans only use 10% of their brains</div>
+      <div class="example-card" onclick="fillExample(this)">Water boils at 100°C at sea level</div>
+      <div class="example-card" onclick="fillExample(this)">5G networks cause cancer</div>
     </div>
-    <div class="loading-text">Running verification pipeline...</div>
-    <div class="loading-shimmer"></div>
+  </div>
 </div>
 
-<div id="results-area"></div>
+<div id="loading" class="htmx-indicator">
+  {% include "partials/stages.html" %}
+</div>
+
+<div id="results"></div>
+
+<script>
+function setMode(mode) {
+  document.querySelectorAll('.mode-btn').forEach(function(btn) { btn.classList.remove('active'); });
+  event.target.classList.add('active');
+}
+function fillExample(el) {
+  document.querySelector('#claim-input').value = el.textContent;
+  document.querySelector('#claim-input').focus();
+}
+</script>
 
 {% endblock %}
