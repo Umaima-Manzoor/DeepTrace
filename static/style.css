@@ -123,6 +123,7 @@ a:hover {
 
 /* --- 5. Layout --- */
 .main {
+  grid-column: 2;
   max-width: calc(var(--max-content) + 64px);
   margin: 0 auto;
   width: 100%;
