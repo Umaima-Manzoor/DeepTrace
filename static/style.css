@@ -379,6 +379,22 @@ a:hover {
   display: block;
 }
 
+/* ERROR BOX (results-area errors) */
+.error-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  background: var(--verdict-false-bg);
+  border: 1px solid var(--verdict-false-border);
+  border-left: 4px solid var(--accent-primary);
+  border-radius: var(--radius-md);
+  color: var(--accent-primary);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
    /* BUTTONS */
 .btn {
   font-family: var(--font-sans);
