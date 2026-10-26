@@ -13,10 +13,12 @@ from backend.source_retriever import retrieve_sources
 from backend.cross_referencer import cross_reference_claim
 from backend.report_generator import generate_verification_report
 from config.settings import settings
+from pathlib import Path
 
 app = FastAPI(title="DeepTrace", version="1.0.0")
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")          # where to look for the template files
+ROOT = Path(__file__).resolve().parent
+app.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")
+templates = Jinja2Templates(directory=ROOT / "templates")          # where to look for the template files
 
 # Returns a minimal UNVERIFIABLE report when a single claim fails mid-pipeline
 def _failed_claim_report(claim_text: str, error: str) -> dict:
@@ -46,7 +48,7 @@ async def home(request: Request):   #Async: can handle multiple requests simulta
 
 
 @app.post("/verify", response_class=HTMLResponse)       # handles POST requests to /verify
-async def verify(request: Request, claim_text: str = Form(...), batch_mode: str = Form(None) ):        #claim_text is required or else an error     batch_mode None means optional        Runs the full 4-stage verification pipeline and returns results HTML
+async def verify(request: Request, claim_text: str = Form(...), batch_mode: str | None = Form(None) ):        #claim_text is required or else an error     batch_mode None means optional        Runs the full 4-stage verification pipeline and returns results HTML
 
     if not claim_text or not claim_text.strip():
         return templates.TemplateResponse(
@@ -55,6 +57,11 @@ async def verify(request: Request, claim_text: str = Form(...), batch_mode: str 
         )
 
     is_batch = batch_mode == "true"
+
+    if len(claim_text) > 8000:
+        return templates.TemplateResponse(request, "partials/error.html", {
+            "error_message": "Input too long. Please keep claims under 8,000 characters.",
+        })
 
     try:
         # Stage 1: Extract atomic claims
@@ -72,6 +79,11 @@ async def verify(request: Request, claim_text: str = Form(...), batch_mode: str 
         else:
             claims_to_process = all_claims[:1]      # single mode: primary claim only
 
+        if not claims_to_process:
+            return templates.TemplateResponse(request, "partials/error.html", {
+                "error_message": "No verifiable claims were extracted. Try a more specific claim.",
+            })
+
         # Stages 2-4: Retrieve, Cross-Reference, Report - for each claim
         reports = []
         for claim in claims_to_process:
@@ -81,7 +93,8 @@ async def verify(request: Request, claim_text: str = Form(...), batch_mode: str 
                 report = generate_verification_report(claim, sources_data, verdict_data)
                 reports.append(report)
             except Exception as e:
-                reports.append(_failed_claim_report(claim.get("claim_text", "Unknown claim"), str(e)))
+                print(f"[ERROR] Claim failed: {claim.get('claim_text', '')[:80]} — {e}")        # first 80 chars of the claim that failed so that the logs don't get flooded
+                reports.append(_failed_claim_report(claim.get("claim_text", "Unknown claim"), "Verification failed. Please try again."))
 
         # Combine all markdown reports into a single downloadable document
         combined_markdown = "\n\n---\n\n".join(
@@ -94,9 +107,10 @@ async def verify(request: Request, claim_text: str = Form(...), batch_mode: str 
         )
 
     except Exception as e:
+        print(f"[ERROR] Verification failed: {e}")
         return templates.TemplateResponse(
             request, "partials/error.html",
-            {"error_message": f"Verification failed: {str(e)}"}
+            {"error_message": "Verification failed. Please try again."}
         )
 
 

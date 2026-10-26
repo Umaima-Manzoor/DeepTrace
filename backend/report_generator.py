@@ -115,8 +115,8 @@ def _generate_markdown_dossier(report: dict) -> str:
 # Synthesizes outputs from all stages into a comprehensive master report.
 def generate_verification_report(claim_data: dict, sources_data: dict, verdict_data: dict) -> dict:
     claim_text = claim_data.get("claim_text") or verdict_data.get("claim_text", "Unknown Claim")
-    verdict = verdict_data.get("verdict", "UNVERIFIABLE").upper()
-    confidence = int(verdict_data.get("confidence_score", 0))
+    verdict = (verdict_data.get("verdict") or "UNVERIFIABLE").upper()       # goes to unverifiable if the verdict key is missing of val is none - to prevent crashing on NoneType to upper
+    confidence = int(verdict_data.get("confidence_score") or 0)
     misinfo_type = verdict_data.get("misinfo_type", "Unclassified")
     reasoning = verdict_data.get("reasoning_summary", "No reasoning summary provided.")
     key_contradiction = verdict_data.get("key_contradiction")

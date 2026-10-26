@@ -137,6 +137,8 @@ def _process_results(raw_results: list) -> list:
 
     for index, item in enumerate(raw_results, start=1):  # source IDs start at 1 for display
         url = item.get("url", "")
+        if urlparse(url).scheme not in ("http", "https"):
+            continue  # skip non-web URLs (javascript:, data:, etc.) - prevents cross-site scripting (XSS) attacks
         tier_info = classify_domain_tier(url)
 
         raw_content = item.get("content", "").strip()
