@@ -16,6 +16,15 @@
         hx-on::before-request="
           var ta = document.querySelector('#claim-input');
           var errMsg = document.querySelector('#form-error');
+          if (ta.value.length > 8000) {
+            event.preventDefault();
+            ta.focus();
+            ta.style.borderColor='var(--accent-primary)';
+            errMsg.classList.add('show');
+            errMsg.textContent = 'Input too long (' + ta.value.length + ' chars). Please keep claims under 8,000 characters.';
+            setTimeout(function(){ ta.style.borderColor=''; errMsg.classList.remove('show'); }, 5000);
+            return;
+          }
           if (!ta.value.trim()) {
             event.preventDefault();
             ta.focus();
@@ -44,9 +53,13 @@
 
     <div class="form-group mode-transition" id="form-fields">
       <label class="form-label" for="claim-input" id="claim-label">Enter a claim to verify</label>
-      <textarea class="form-textarea" id="claim-input" name="claim_text" maxlength="8000"
-                placeholder="e.g., The Great Wall of China is visible from space with the naked eye"></textarea>
-      <p class="form-hint" id="claim-hint">Enter a single claim to verify.</p>
+      <textarea class="form-textarea" id="claim-input" name="claim_text"
+                placeholder="e.g., The Great Wall of China is visible from space with the naked eye"
+                oninput="updateCharCount()"></textarea>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+        <p class="form-hint" id="claim-hint" style="margin-top:0;">Enter a single claim to verify.</p>
+        <span class="form-hint" id="char-count" style="margin-top:0;">0 / 8,000</span>
+      </div>
       <div class="form-error-msg" id="form-error"></div>
     </div>
 
@@ -102,6 +115,14 @@ function setMode(mode, btn) {
     }
     fields.classList.remove('mode-switching');
   }, 200);
+}
+
+function updateCharCount() {
+  var ta = document.querySelector('#claim-input');    // gets the textarea element
+  var counter = document.querySelector('#char-count');  // counter span
+  var len = ta.value.length;
+  counter.textContent = len.toLocaleString() + ' / 8,000';    //this function is to write 12345 as 12,345
+  counter.style.color = len > 8000 ? 'var(--accent-primary)' : len > 6000 ? 'var(--accent-gold)' : '';    // red: over the limit | gold: close to the limit | grey: under the limit
 }
 
 function fillExample(el) {
