@@ -69,7 +69,7 @@ async def verify(request: Request, claim_text: str = Form(...), batch_mode: str 
         if not extraction.get("success"):
             return templates.TemplateResponse(
                 request, "partials/error.html",
-                {"error_message": extraction.get("error", "Claim extraction failed.")}
+                {"error_message": "Claim extraction failed. Please try again."}
             )
 
         # Determine which claims to process - single mode uses first claim only, batch uses all (capped at 5)
