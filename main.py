@@ -42,6 +42,24 @@ def _failed_claim_report(claim_text: str, error: str) -> dict:
         "export_markdown": ""
     }
 
+def _split_claims(text: str) -> list[str]:      # Pre-split batch input by newlines so the LLM doesn't silently drop claims
+    import re
+    text = text.replace('\r\n', '\n')
+    # Protect common abbreviations so "Dr. Ahmed" doesn't split at the period
+    abbrevs = ['Dr.', 'Mr.', 'Mrs.', 'Ms.', 'Prof.', 'St.', 'Jr.', 'Sr.', 'vs.', 'etc.', 'U.S.', 'U.K.', 'e.g.', 'i.e.']
+    for abbr in abbrevs:
+        text = text.replace(abbr, abbr.replace('.', '·'))
+    lines = [line.strip() for line in text.split('\n') if line.strip()]
+    claims = []
+    for line in lines:
+        parts = re.split(r'(?<=[.!?])\s+(?=[A-Z])', line)
+        for part in parts:
+            part = part.replace('·', '.').strip()
+            if len(part) > 10:
+                claims.append(part)
+    return claims[:5]
+
+
 @app.get("/", response_class=HTMLResponse)      # run this function when a GET request is sent and this route returns HTML
 async def home(request: Request):   #Async: can handle multiple requests simultaneously - renders the home page with the claim input form - Request: HTTP object
     return templates.TemplateResponse(request, "index.html")
@@ -65,19 +83,25 @@ async def verify(request: Request, claim_text: str = Form(...), batch_mode: str 
 
     try:
         # Stage 1: Extract atomic claims
-        extraction = extract_claims(claim_text, batch_mode=is_batch)
-        if not extraction.get("success"):
-            return templates.TemplateResponse(
-                request, "partials/error.html",
-                {"error_message": "Claim extraction failed. Please try again."}
-            )
-
-        # Determine which claims to process - single mode uses first claim only, batch uses all (capped at 5)
-        all_claims = extraction.get("claims", [])
         if is_batch:
-            claims_to_process = all_claims[:5]      # cap at 5 to prevent excessive API calls and wait times
+            # Pre-split in Python so the LLM can't silently drop claims
+            raw_claims = _split_claims(claim_text)
+            if not raw_claims:
+                return templates.TemplateResponse(request, "partials/error.html", {
+                    "error_message": "No verifiable claims were extracted. Try a more specific claim.",
+                })
+            claims_to_process = [
+                {"claim_text": c, "search_query": c, "claim_type": "factual"}
+                for c in raw_claims
+            ]
         else:
-            claims_to_process = all_claims[:1]      # single mode: primary claim only
+            extraction = extract_claims(claim_text, batch_mode=False)
+            if not extraction.get("success"):
+                return templates.TemplateResponse(
+                    request, "partials/error.html",
+                    {"error_message": "Claim extraction failed. Please try again."}
+                )
+            claims_to_process = extraction.get("claims", [])[:1]      # single mode: primary claim only
 
         if not claims_to_process:
             return templates.TemplateResponse(request, "partials/error.html", {
