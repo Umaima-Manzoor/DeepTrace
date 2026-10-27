@@ -440,6 +440,22 @@ a:hover {
   border-color: var(--text-muted);
 }
 
+.btn:disabled,
+.btn:disabled:hover {
+  filter: brightness(0.65);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-secondary:disabled,
+.btn-secondary:disabled:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--text-muted);
+  border-color: var(--border);
+  filter: none;
+}
+
    /* MODE TOGGLE */
 .mode-toggle {
   display: inline-flex;
