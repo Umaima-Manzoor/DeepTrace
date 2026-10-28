@@ -134,6 +134,17 @@ function fillExample(el) {
   document.querySelector('#claim-input').focus();
   updateCharCount();
 }
+
+// Auto-scroll to results when they appear in the DOM
+var resultsDiv = document.querySelector('#results');
+var scrollObserver = new MutationObserver(function() {
+  if (resultsDiv.innerHTML.trim()) {
+    setTimeout(function() {
+      resultsDiv.scrollIntoView({behavior: 'smooth', block: 'start'});
+    }, 300);
+  }
+});
+scrollObserver.observe(resultsDiv, {childList: true, subtree: true});   // informs whenever child element enters or leaves this section
 </script>
 
 {% endblock %}
