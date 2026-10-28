@@ -810,6 +810,7 @@ a:hover {
   color: var(--accent-secondary);
   border: 1px solid var(--accent-secondary-border);
   letter-spacing: 0.01em;
+  cursor: help;
 }
 
    /* METRICS ROW */

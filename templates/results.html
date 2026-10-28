@@ -70,7 +70,20 @@
     {% if report.misinfo_type and report.misinfo_type != 'Unclassified' %}
     <div class="verdict-cell">
       <span class="cell-label">Classification</span>
-      <span class="classification-badge anim-scale-in" style="--delay: {{ loop.index0 * 0.15 + 0.5 }}s">{{ report.misinfo_type }}</span>
+      {% set tooltip_map = {
+        'Cherry-Picking': 'Selectively uses evidence while ignoring contradictory data',
+        'Exaggeration': 'Overstates or amplifies the actual evidence',
+        'False Context': 'Real information presented in a misleading context',
+        'Fabrication': 'Completely made up with no factual basis',
+        'Misleading': 'Technically true but designed to deceive',
+        'Outdated': 'Based on old data that no longer applies',
+        'Conspiracy': 'Unfounded theory connecting unrelated events',
+        'Satire': 'Humorous or fictional content mistaken as real',
+        'Legitimate': 'Supported by credible, authoritative evidence',
+        'Unclassified': 'Could not be categorized',
+        'Persistent Myth': 'Widely believed falsehood despite being thoroughly debunked'
+      } %}
+      <span class="classification-badge anim-scale-in" style="--delay: {{ loop.index0 * 0.15 + 0.5 }}s" title="{{ tooltip_map.get(report.misinfo_type, 'Classification of misinformation type') }}">{{ report.misinfo_type }}</span>
     </div>
     {% endif %}
   </div>
