@@ -1,123 +1,322 @@
 <div align="center">
 
-# 🛰️ DeepTrace
-### Autonomous Fact-Checking & Misinformation Radar
+<img src="static/favicon.svg" alt="DeepTrace Logo" width="100"/>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Nebius Token Factory](https://img.shields.io/badge/Inference-Nebius%20Token%20Factory-8A2BE2.svg)](https://nebius.com)
-[![NVIDIA Nemotron](https://img.shields.io/badge/LLM-NVIDIA%20Nemotron-76B900.svg)](https://www.nvidia.com)
-[![Tavily AI](https://img.shields.io/badge/Search-Tavily%20AI-00C7B7.svg)](https://tavily.com)
+# DeepTrace
 
-**Built for the Nebius x NVIDIA Global AI Hackathon (Track 2: Best Apps and Agents)**
+### Autonomous Multi-Source Fact-Checking Agent
 
-[🚀 Live Demo (Coming Soon)](#) • [📹 Video Presentation (Coming Soon)](#) • [🏗️ System Architecture](#-system-architecture) • [⚡ Quick Start](#-quick-start)
+<p>
+  <em>Verify any claim against live web evidence in under 30 seconds.</em>
+</p>
+
+<p>
+  <img src="https://img.shields.io/badge/license-MIT-d97706?style=for-the-badge" alt="MIT License"/>
+  <img src="https://img.shields.io/badge/python-3.11+-0891b2?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.11+"/>
+  <img src="https://img.shields.io/badge/FastAPI-dc2626?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI"/>
+  <img src="https://img.shields.io/badge/HTMX-18181b?style=for-the-badge&logo=htmx&logoColor=white" alt="HTMX"/>
+</p>
+
+<p>
+  <img src="https://img.shields.io/badge/Inference-Nebius%20Token%20Factory-dc2626?style=flat-square" alt="Nebius"/>
+  <img src="https://img.shields.io/badge/LLM-NVIDIA%20Nemotron%203-76B900?style=flat-square&logo=nvidia&logoColor=white" alt="Nemotron"/>
+  <img src="https://img.shields.io/badge/Search-Tavily%20AI-0891b2?style=flat-square" alt="Tavily"/>
+  <img src="https://img.shields.io/badge/Deploy-Modal-d97706?style=flat-square" alt="Modal"/>
+</p>
+
+<br/>
+
+**Built for the Nebius × NVIDIA Global AI Hackathon 2026 — Track 2: Best Apps & Agents**
+
+<p>
+  <a href="https://umaima-manzoor--deeptrace-web.us-east.modal.run"><b>🌐 Live Demo</b></a> &nbsp;·&nbsp;
+  <a href="#"><b>🎬 Video Walkthrough</b></a> &nbsp;·&nbsp;
+  <a href="#-architecture"><b>⚙️ Architecture</b></a> &nbsp;·&nbsp;
+  <a href="#-quick-start"><b>⚡ Quick Start</b></a>
+</p>
 
 </div>
 
 ---
 
-## 📌 Problem & Vision
+<div align="center">
 
-In 2026, AI-generated synthetic content, hallucinations, and out-of-context claims travel across the web in seconds. Human fact-checking takes hours or days, creating a critical information gap where false narratives anchor before they are debunked.
+### ⚠️ The Problem
 
-**DeepTrace** is an autonomous verification agent designed to close this gap in real time. It accepts any raw claim or news article, decomposes it into atomic factual propositions, searches live authoritative sources across the web via **Tavily**, and performs deep logical cross-referencing and stance analysis powered by **NVIDIA Nemotron 3 Ultra** on **Nebius Token Factory**.
+</div>
+
+In 2026, AI-generated synthetic content and out-of-context claims spread across the web in **seconds**. Human fact-checkers take **hours**. By the time a correction lands, the false narrative has already anchored in millions of minds.
+
+<div align="center">
+
+### 🎯 The Solution
+
+</div>
+
+**DeepTrace** is an autonomous verification agent that closes the real-time information gap. Paste any claim or article excerpt, and watch a four-stage pipeline extract atomic propositions, search tier-ranked authoritative sources via Tavily, cross-reference evidence with NVIDIA Nemotron 3 Super, and deliver a verdict with full source attribution — all in under 30 seconds.
 
 ---
 
-## 🏗️ System Architecture
+<div align="center">
+
+## ⚙️ Architecture
+
+</div>
 
 ```mermaid
-flowchart TD
-    A[User Input: Raw Claim / Article] --> B[Stage 1: Claim Decomposition]
-    B -->|NVIDIA Nemotron Nano| C[Structured Atomic Claims]
-    C --> D[Stage 2: Live Multi-Angle Retrieval]
-    D -->|Tavily AI Search API| E[Tier-Ranked Live Web Evidence]
-    E --> F[Stage 3: Deep Cross-Referencing & Stance Analysis]
-    F -->|NVIDIA Nemotron 3 Ultra via Nebius| G[Contradiction & Consensus Synthesis]
+flowchart LR
+    A([User Input<br/>Claim or Article]) --> B[Stage 1<br/>Claim Decomposition]
+    B -->|Nemotron 3 Nano| C([Atomic Claims])
+    C --> D[Stage 2<br/>Live Web Retrieval]
+    D -->|Tavily Search| E([Tier-Ranked Sources])
+    E --> F[Stage 3<br/>Cross-Reference & Stance]
+    F -->|Nemotron 3 Super| G([Evidence Synthesis])
+    G --> H([Stage 4<br/>Verdict Scorecard])
+
+    style A fill:#f5f0e8,stroke:#18181b,color:#18181b
+    style H fill:#dc2626,stroke:#b91c1c,color:#ffffff
+    style B fill:#ffffff,stroke:#0891b2,color:#18181b
+    style D fill:#ffffff,stroke:#0891b2,color:#18181b
+    style F fill:#ffffff,stroke:#0891b2,color:#18181b
+    style C fill:#ecfeff,stroke:#0891b2,color:#18181b
+    style E fill:#ecfeff,stroke:#0891b2,color:#18181b
+    style G fill:#ecfeff,stroke:#0891b2,color:#18181b
 ```
-    G --> H[Stage 4: Confidence Scorecard & Evidence Breakdown]
-## ✨ Core Features
 
- - 🎯 **Atomic Claim Decomposition:** Extracts verifiable factual assertions from complex text using NVIDIA Nemotron Nano to ensure focused, high-precision searches.
- - 🌐 **Authoritative Live Retrieval:** Uses Tavily Search API to query 8–10 independent, live web sources filtered for domain authority.
- - ⚖️ **Logical Stance & Contradiction Detection:** Leverages NVIDIA Nemotron 3 Ultra hosted on Nebius Token Factory to evaluate supporting vs. contradicting evidence.
- - 🏷️ **Misinformation Taxonomy:** Classifies debunked claims by deceit type (Cherry-Picking, Out of Context, Fabricated Data, False Attribution).
- - 📊 **Explainable Scorecard:** Generates transparent, color-coded confidence verdicts (🟢 Verified | 🟡 Disputed | 🔴 Debunked | ⚪ Unverifiable) with source attribution.
-Bash
-## 🛠️ Tech Stack & Infrastructure
+---
 
-| Layer | Component | Description |
-|---|---|---|
-| Cloud Inference | Nebius Token Factory | High-performance hosted endpoint for Nemotron LLMs |
-| Deep Reasoning | NVIDIA Nemotron 3 Ultra | Complex cross-referencing, nuance detection, and verdict synthesis |
-| Fast Preprocessing | NVIDIA Nemotron Nano | Fast claim extraction and lightweight query parsing |
-| Search Engine | Tavily AI | Agentic web search engine optimized for AI grounding |
-| Dashboard UI | Streamlit | Responsive, dark-themed fact-checking dashboard |
-| Core Runtime | Python 3.10+ | Modular agentic verification pipeline |
+<div align="center">
+
+## ✨ Features
+
+</div>
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+#### 🧠 Atomic Claim Decomposition
+Extracts verifiable factual assertions from complex text using **NVIDIA Nemotron 3 Nano** for precision-targeted searches.
+
+#### 🌐 Authoritative Live Retrieval
+Pulls **8 independent, live web sources** per claim via Tavily, filtered and ranked by domain authority.
+
+#### ⚖️ Stance & Contradiction Detection
+**NVIDIA Nemotron 3 Super** evaluates supporting vs. contradicting evidence with nuanced multi-angle reasoning.
+
+#### 🏷️ Misinformation Taxonomy
+Classifies debunked claims by deceit type — Cherry-Picking, Exaggeration, False Context, Fabrication, Persistent Myth — with hover-to-explain tooltips.
+
+</td>
+<td width="50%" valign="top">
+
+#### 📊 Explainable Scorecard
+Color-coded verdicts with transparent confidence scores:
+- 🟢 **Verified** · high-trust consensus
+- 🟡 **Disputed** · mixed evidence
+- 🔴 **Debunked** · contradicted by sources
+- ⚪ **Unverifiable** · insufficient evidence
+
+#### 📦 Batch Mode
+Process up to **5 claims simultaneously** with a consolidated summary dashboard.
+
+#### 🚀 Serverless Deployment
+Hosted on **Modal** with scale-to-zero infrastructure and sub-10s cold starts.
+
+#### 🎨 Warm Authority Design
+Custom palette, DM Sans typography, animated loading stages, and tier-ranked source cards.
+
+</td>
+</tr>
+</table>
+
+---
+
+<div align="center">
+
+## 🖼️ Interface
+
+</div>
+
+> _Screenshots coming soon — add to `docs/screenshots/` and reference below._
+
+<div align="center">
+
+<!-- Replace with actual screenshots after capturing -->
+<img src="docs/screenshots/home.png" alt="DeepTrace home screen" width="80%"/>
+
+<br/><br/>
+
+<img src="docs/screenshots/results.png" alt="Verification results with evidence breakdown" width="80%"/>
+
+<br/><br/>
+
+<img src="docs/screenshots/batch.png" alt="Batch mode summary dashboard" width="80%"/>
+
+</div>
+
+---
+
+<div align="center">
+
+## 🛠️ Stack
+
+</div>
+
+| Layer | Technology | Role |
+|:---|:---|:---|
+| 🧠 **Deep Reasoning** | NVIDIA Nemotron 3 Super (120B) | Cross-referencing, nuance detection, verdict synthesis |
+| ⚡ **Fast Preprocessing** | NVIDIA Nemotron 3 Nano (30B) | Claim extraction, lightweight query parsing |
+| ☁️ **Inference Platform** | Nebius Token Factory | Hosted endpoints for Nemotron models |
+| 🔍 **Search Engine** | Tavily AI | Agentic web search optimized for LLM grounding |
+| 🔧 **Backend** | FastAPI + Python 3.11 | Async 4-stage verification pipeline |
+| ⚛️ **Frontend** | HTMX + Jinja2 | Reactive server-rendered UI, zero JS framework overhead |
+| 🎨 **Styling** | Vanilla CSS + DM Sans | Warm authority palette, custom animations |
+| 🚢 **Deployment** | Modal | Serverless hosting with scale-to-zero |
+
+---
+
+<div align="center">
 
 ## ⚡ Quick Start
+
+</div>
 
 ### 1. Clone the repository
 
 ```bash
-
 git clone https://github.com/Umaima-Manzoor/DeepTrace.git
+cd DeepTrace
 ```
 
 ### 2. Create and activate a virtual environment
-Bash
+
 ```bash
-
-```
 python -m venv venv
-Activate it in PowerShell:
-
-```powershell
-# Windows (PowerShell):
 ```
-.\venv\Scripts\Activate.ps1
-Or in Command Prompt:
 
+**Windows (PowerShell)**
+```powershell
+.\venv\Scripts\Activate.ps1
+```
+
+**Windows (Command Prompt)**
 ```bat
-# Windows (Command Prompt):
+.\venv\Scripts\activate.bat
+```
+
+**macOS / Linux**
+```bash
+source venv/bin/activate
 ```
 
 ### 3. Install dependencies
-Bash
-```bash
 
+```bash
+pip install -r requirements.txt
 ```
 
 ### 4. Configure environment variables
 
-Copy `.env.example` to `.env` and add your Nebius and Tavily API keys:
-Copy .env.example to .env and fill in your Nebius and Tavily API keys:
-```powershell
-Bash
-```
-
-### 5. Launch the dashboard
-5. Launch the Dashboard
 ```bash
-Bash
+cp .env.example .env
 ```
 
-## 🏆 Hackathon Alignment & Judging Criteria
+Open `.env` and add your API keys:
 
-- **Technological Implementation:** Dual-model architecture utilizing high-reasoning NVIDIA Nemotron 3 Ultra and lightweight Nemotron Nano hosted on Nebius Token Factory.
-- **Design & Experience:** Interactive Streamlit cockpit providing real-time verification progress, side-by-side evidence analysis, and transparent citations.
-- **Potential Impact:** Direct countermeasure against viral AI hallucinations and digital misinformation with zero user friction.
-- **Bonus Award Eligibility:** Deeply integrated with Tavily AI Search API for grounding dynamic research loops.
+```env
+LLM_API_KEY=your_nebius_api_key_here
+LLM_BASE_URL=https://api.tokenfactory.nebius.com/v1
+FAST_MODEL=nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B
+REASONING_MODEL=nvidia/nemotron-3-super-120b-a12b
+SEARCH_API_KEY=your_tavily_api_key_here
+APP_ENV=development
+MAX_SEARCH_RESULTS=8
+CONFIDENCE_THRESHOLD=0.75
+```
 
-## 📄 License
+### 5. Launch the server
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+```bash
+uvicorn main:app --reload
+```
+
+Open **[http://127.0.0.1:8000](http://127.0.0.1:8000)** in your browser.
+
+---
 
 <div align="center">
 
-Built with 💚 by <b>Umaima Manzoor</b> for the 2026 Nebius x NVIDIA Global AI Hackathon.
+## 🚢 Deployment
 
 </div>
 
-<div align="center"> Built with 💚 by <b>Umaima Manzoor</b> for the 2026 Nebius x NVIDIA Global AI Hackathon. </div> ```
+### Modal (recommended — serverless, scale-to-zero)
+
+```bash
+pip install modal
+modal setup
+```
+
+Create your secrets:
+
+```bash
+modal secret create deeptrace-secrets \
+  LLM_API_KEY=your_nebius_key \
+  LLM_BASE_URL=https://api.tokenfactory.nebius.com/v1 \
+  FAST_MODEL=nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B \
+  REASONING_MODEL=nvidia/nemotron-3-super-120b-a12b \
+  SEARCH_API_KEY=your_tavily_key \
+  APP_ENV=production
+```
+
+Deploy:
+
+```bash
+modal deploy modal_app.py
+```
+
+Your app goes live at `https://<username>--deeptrace-web.us-east.modal.run`.
+
+---
+
+<div align="center">
+
+## 🏆 Hackathon Alignment
+
+</div>
+
+<table>
+<tr>
+<td width="25%" align="center"><b>Technology</b></td>
+<td>Dual-model agentic architecture (Nemotron 3 Super + Nano) on Nebius Token Factory, orchestrated through a deterministic 4-stage pipeline.</td>
+</tr>
+<tr>
+<td align="center"><b>Design</b></td>
+<td>Reactive FastAPI + HTMX interface with real-time stage animations, tier-ranked source cards, hover-explained classifications, and a warm authority palette.</td>
+</tr>
+<tr>
+<td align="center"><b>Impact</b></td>
+<td>Direct countermeasure against viral AI hallucinations — paste a claim, get a verdict in under 30 seconds. Zero user friction.</td>
+</tr>
+<tr>
+<td align="center"><b>Tavily Integration</b></td>
+<td>Deeply integrated for grounded multi-angle research loops, pulling 8 live web sources per claim with domain tier filtering.</td>
+</tr>
+</table>
+
+---
+
+<div align="center">
+
+## 📄 License
+
+Released under the [MIT License](LICENSE).
+
+<br/>
+
+<sub>Designed and engineered by <b>Umaima Manzoor</b> · Lahore, Pakistan</sub>
+
+<sub>Nebius × NVIDIA Global AI Hackathon 2026</sub>
+
+</div>
