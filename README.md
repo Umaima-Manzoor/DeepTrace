@@ -315,7 +315,7 @@ Released under the [MIT License](LICENSE).
 
 <br/>
 
-<sub>Designed and engineered by <b>Umaima Manzoor</b> · Lahore, Pakistan</sub>
+<sub>Designed and engineered by <b>Umaima Manzoor</b></sub>
 
 <sub>Nebius × NVIDIA Global AI Hackathon 2026</sub>
 
