@@ -10,6 +10,10 @@
   <em>Verify any claim against live web evidence in under 30 seconds.</em>
 </p>
 
+[![DeepTrace Demo Video](https://img.youtube.com/vi/MtYguOzHai0/maxresdefault.jpg)](https://youtu.be/MtYguOzHai0)
+
+▶️ **[Watch the 2-minute DeepTrace Walkthrough Video on YouTube](https://youtu.be/MtYguOzHai0)**
+
 <p>
   <img src="https://img.shields.io/badge/license-MIT-d97706?style=for-the-badge" alt="MIT License"/>
   <img src="https://img.shields.io/badge/python-3.11+-0891b2?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.11+"/>
@@ -30,7 +34,7 @@
 
 <p>
   <a href="https://umaima-manzoor--deeptrace-web.us-east.modal.run"><b>🌐 Live Demo</b></a> &nbsp;·&nbsp;
-  <a href="#"><b>🎬 Video Walkthrough</b></a> &nbsp;·&nbsp;
+  <a href="https://youtu.be/MtYguOzHai0"><b>🎬 Video Walkthrough</b></a> &nbsp;·&nbsp;
   <a href="#-architecture"><b>⚙️ Architecture</b></a> &nbsp;·&nbsp;
   <a href="#-quick-start"><b>⚡ Quick Start</b></a>
 </p>
@@ -99,7 +103,7 @@ flowchart LR
 Extracts verifiable factual assertions from complex text using **NVIDIA Nemotron 3 Nano** for precision-targeted searches.
 
 #### 🌐 Authoritative Live Retrieval
-Pulls **8 independent, live web sources** per claim via Tavily, filtered and ranked by domain authority.
+Pulls multiple independent, live web sources per claim via Tavily, filtered and ranked by domain authority.
 
 #### ⚖️ Stance & Contradiction Detection
 **NVIDIA Nemotron 3 Super** evaluates supporting vs. contradicting evidence with nuanced multi-angle reasoning.
@@ -138,20 +142,25 @@ Custom palette, DM Sans typography, animated loading stages, and tier-ranked sou
 
 </div>
 
-> _Screenshots coming soon — add to `docs/screenshots/` and reference below._
-
 <div align="center">
 
-<!-- Replace with actual screenshots after capturing -->
 <img src="docs/screenshots/home.png" alt="DeepTrace home screen" width="80%"/>
 
 <br/><br/>
 
-<img src="docs/screenshots/results.png" alt="Verification results with evidence breakdown" width="80%"/>
+<img src="docs/screenshots/verified.png" alt="Verified claim results with tier-ranked evidence" width="80%"/>
+
+<br/><br/>
+
+<img src="docs/screenshots/debunked.png" alt="Debunked claim results with AI analysis and evidence" width="80%"/>
 
 <br/><br/>
 
 <img src="docs/screenshots/batch.png" alt="Batch mode summary dashboard" width="80%"/>
+
+<br/><br/>
+
+<img src="docs/screenshots/mobile.png" alt="Responsive DeepTrace mobile interface" width="35%"/>
 
 </div>
 
