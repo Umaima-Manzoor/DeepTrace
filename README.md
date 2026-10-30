@@ -12,7 +12,6 @@
 
 [![DeepTrace Demo Video](https://img.youtube.com/vi/MtYguOzHai0/maxresdefault.jpg)](https://youtu.be/MtYguOzHai0)
 
-▶️ **[Watch the 2-minute DeepTrace Walkthrough Video on YouTube](https://youtu.be/MtYguOzHai0)**
 
 <p>
   <img src="https://img.shields.io/badge/license-MIT-d97706?style=for-the-badge" alt="MIT License"/>
